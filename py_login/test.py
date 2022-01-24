@@ -22,10 +22,46 @@ except Exception as err:
 print(get_all_perms())
 
 user_dict,token_dict,perms_dict = get_extended_info("admin")
-print(user_dict["auth_type"])
-print(isinstance(user_dict["auth_type"],AUTH_TYPE))
 
 print(login_user("admin","12345"))
 
-print(login_user("testuser@ad.local","12345"))
 
+
+try:
+    print(login_user("testuser@ad.local","12345"))
+except Exception as err:
+    print(f"{type(err).__name__}: {err}")
+
+
+token = create_token("admin")
+
+print(f"\ncreated token: {token}")
+
+print("\ntrying to verify token")
+success, perm_array, username = verify_token(token,"127.0.0.1")
+
+print(success)
+print(perm_array)
+print(username)
+
+print("\ninvalidating token")
+
+print(logout_user(token))
+
+
+print("\ntrying to verify token")
+success, perm_array, username = verify_token(token,"127.0.0.1")
+
+print(success)
+print(perm_array)
+print(username)
+
+
+print("trying to invalidate already invalidated token")
+print(logout_user(token))
+
+print("trying to validate non existing token")
+try:
+    print(logout_user("doesnotexist"))
+except Exception as err:
+    print(f"{type(err).__name__}: {err}")

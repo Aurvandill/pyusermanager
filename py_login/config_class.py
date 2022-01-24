@@ -11,17 +11,7 @@ class LoginConfig():
     inited = False
 
     debug_output = False
-
-
-
-    ad_stuff = {
-        "ad_login":     False,
-        "ad_address":   "ldap://127.0.0.1:389",
-        "base_dn":      "ou=User,dc=ad,dc=local",
-        "ad_group":     "allowed_to_login",
-        "ad_suffix":    "@ad.local"
-    }
-
+    
     #lenghts
     username_min_len = 4
     password_min_len = 4

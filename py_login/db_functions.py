@@ -1,4 +1,5 @@
 # Imports
+from multiprocessing.sharedctypes import Value
 from pony.orm import *
 import bcrypt
 
@@ -7,7 +8,7 @@ from config_class import LoginConfig
 from auth_type_enum import AUTH_TYPE
 from data_classes import *
 from ad_config_class import AD_Config
-from custom_exceptions import NotInitedException,MissingUserException,AlreadyExistsException
+from custom_exceptions import NotInitedException,MissingUserException,AlreadyExistsException, TokenMissingException
 
 import ldap_stuff
 
@@ -119,27 +120,24 @@ def login_user(uname="",pw=None):
                 else:
                     raise NotImplementedError("Auth type not supported!")
 
-            
+#returns bool success
 def logout_user(token="",ip="127.0.0.1"):
     
     if not LoginConfig.inited:
         raise NotInitedException("Config not inited!")
     
-    try:
-        with db_session:
-            found_token=Auth_Token.get(token=token)
+    with db_session:
+        found_token=Auth_Token.get(token=token)
 
-            if found_token is None:
-                return False ,"token is unknown"
+        if found_token is None:
+            raise TokenMissingException("could not find requested Token")
+        else:
+            if found_token.ip == ip:
+                found_token.valid_until = "1999-01-01"
+                return True
             else:
-                if found_token.ip == ip:
-                    found_token.valid_until = "1999-01-01"
-                    return True ,"token invalidated"
-                else:
-                    return False,"trying to logout user from different ip? wtf"
-    except Exception as err:
-        return False,str(err)
-    
+                return ValueError("ip differs -> not invalidating Token")
+
 def create_token(user=None,ip="127.0.0.1",valid_days=1):
     
     if not LoginConfig.inited:
@@ -155,8 +153,9 @@ def create_token(user=None,ip="127.0.0.1",valid_days=1):
     with db_session:
         
         found_user=User.get(username=user)
+
         if found_user is None:
-            raise ValueError("user to create token for does not exist!")
+            raise MissingUserException("user to create token for does not exist!")
 
         #generate day
         valid_until = datetime.date.today() + datetime.timedelta(days=valid_days)
@@ -167,13 +166,17 @@ def create_token(user=None,ip="127.0.0.1",valid_days=1):
         token_to_hash = f"{user}@{ip};valid_until:{date_string}"
         token_hash = bcrypt.hashpw(token_to_hash.encode("utf-8"),token_salt)
         token_hex = token_hash.hex()
-        print(f"\ngenerating token for {user}")
-        print("------------------------------------------------------")
-        print(f"token to hash({len(token_to_hash)}):\t{token_to_hash}")
-        print(f"token salt({len(token_salt)}):\t\t{token_salt}")
-        print(f"hashed token({len(token_hash)}):\t{token_hash}")
-        print(f"hex token({len(token_hash)}):\t\t{token_hex}")
-        print("------------------------------------------------------")    
+
+        if LoginConfig.debug_output:
+            print(f"""
+        generating token for {user}
+------------------------------------------------------
+token to hash({len(token_to_hash)}):	{token_to_hash}
+token salt({len(token_salt)}):	        {token_salt}
+hashed token({len(token_hash)}):	{token_hash}
+hex token({len(token_hash)}):		{token_hex}
+------------------------------------------------------
+""")
         
         #if user exists
         token = Auth_Token.get(user=user)
@@ -192,15 +195,20 @@ def verify_token(token="",ip="0.0.0.0"):
     if not LoginConfig.inited:
         raise NotInitedException("Config not inited!")
 
-    return_value = (False, None,None)
+    return_value = (False, [], None)
+
+    #check types of paras
     if type(token) != str or type(ip) != str:
-        return_value = (False, None, None)
+        return return_value
+
     else:
         with db_session:
+            #see if we find the token
             found_token=Auth_Token.get(token=token)
-            if found_token is not None:
-                user = found_token.user
 
+            if found_token is not None:
+
+                user = found_token.user
                 today = datetime.datetime.today()
                 valid_until = datetime.datetime.strptime(user.token.valid_until,"%Y-%m-%d")
 
@@ -213,7 +221,7 @@ def verify_token(token="",ip="0.0.0.0"):
                     return_value = (True, perm_array, user.username)
             else:
                 print("did not find token")
-                return_value = (False, None, None)
+                return_value = (False, [], None)
     
     return return_value
 
