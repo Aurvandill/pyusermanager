@@ -1,7 +1,7 @@
-# py_login
+# pyusermanager
 a user management libary for web services or other stuff
 
-#License
+# License
 MIT -> see LICENSE for more Information
 
 # Features
@@ -9,6 +9,6 @@ MIT -> see LICENSE for more Information
 * registration
 * Token generation
 * Token Verification
-* Changing Userinfo (not fully implemented yet)
-* User activation over Email (if they are not activated by default)
-* password Reset (not implemented yet)
+* Changing Userinfo
+* User activation over token
+* password Reset over token
