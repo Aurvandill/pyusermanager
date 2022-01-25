@@ -3,7 +3,7 @@
 #LoginConfig(debug=True)
 
 
-from py_login import *
+from pyusermanager import *
 
 
 ad_config = AD_Config()
@@ -103,6 +103,14 @@ print(f"getting Auth_Token: {get_token('admin',Auth_Token)}")
 print(f"getting reset_Token: {get_token('admin',ResetCode)}")
 print(f"getting activation_token: {get_token('admin',ActivationCode)}")
 
+print(f"\ncurrent user (as dictionary): \n{get_users()}")
+print()
+try:
+    print(create_user(uname="admin2",pw="12345",email="test@local",auth=AUTH_TYPE.LOCAL))
+except Exception as err:
+    print(err)
+print(f"\ncurrent user (as dictionary): \n{get_users()}")
 
 print("deleting test account!")
 delete_user("admin")
+delete_user("admin2")
