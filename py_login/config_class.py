@@ -1,8 +1,6 @@
 from pony.orm import *
 from enum import Enum
 
-from sqlalchemy import true
-
 from db_config_class import DB_Config
 from auth_type_enum import AuthTypeConverter
 
@@ -23,15 +21,33 @@ class LoginConfig():
     username_min_len = 4
     password_min_len = 4
 
+    #do we allow public registrations?
+    public_registration = True
+    allow_avatars = True
+    admin_group_name = "admin"
+
     db = Database()
 
-    def __init__(self,db_config=DB_Config(),debug = False, password_reset_days_valid = 1, username_min_len = 4, password_min_len = 4, auto_activate_accounts = True):
+    def __init__(self,
+                db_config=DB_Config(),debug = False,
+                password_reset_days_valid = 1,
+                username_min_len = 4,
+                password_min_len = 4,
+                auto_activate_accounts = True,
+                public_registration = True,
+                allow_avatars = True,
+                admin_group_name = "admin"
+                ):
+
         LoginConfig.debug_output = debug
         LoginConfig.username_min_len = username_min_len
         LoginConfig.password_min_len = password_min_len
         LoginConfig.auto_activate_accounts = auto_activate_accounts
         LoginConfig.email_required = not auto_activate_accounts
         LoginConfig.password_reset_days_valid = password_reset_days_valid
+        LoginConfig.public_registration = public_registration
+        LoginConfig.allow_avatars = allow_avatars
+        LoginConfig.admin_group_name = admin_group_name
 
         if LoginConfig.debug_output:
             print(f"trying to bind with the following config{db_config}")
