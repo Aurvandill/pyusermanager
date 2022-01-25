@@ -5,20 +5,20 @@ from pony.orm import *
 import bcrypt
 from email.utils import parseaddr
 
-from config_class import LoginConfig
-from auth_type_enum import AUTH_TYPE
+from .config_class import LoginConfig
+from .auth_type_enum import AUTH_TYPE
 
 #db entries
-from data_classes import *
+from .data_classes import *
 
 #configuration of ad module (default is deactivated)
-from ad_config_class import AD_Config
+from .ad_config_class import AD_Config
 
 #custom exceptions!
-from custom_exceptions import NotInitedException,MissingUserException,AlreadyExistsException, TokenMissingException
+from .custom_exceptions import NotInitedException,MissingUserException,AlreadyExistsException, TokenMissingException
 
 #for ldap auth
-import ldap_stuff
+from . import ldap_stuff
 
 
 #######################

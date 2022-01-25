@@ -1,8 +1,8 @@
 from pony.orm import *
 from enum import Enum
 
-from db_config_class import DB_Config
-from auth_type_enum import AuthTypeConverter
+from .db_config_class import DB_Config
+from .auth_type_enum import AuthTypeConverter
 
 
 class LoginConfig():

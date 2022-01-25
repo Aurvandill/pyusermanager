@@ -1,9 +1,7 @@
 import ldap
-import sys
-import config_class
-import traceback
-from config_class import LoginConfig
-from ad_config_class import AD_Config
+
+from .config_class import LoginConfig
+from .ad_config_class import AD_Config
 
 
 def authenticate(username, password):

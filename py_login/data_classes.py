@@ -1,8 +1,8 @@
 from pony.orm import *
 import datetime
-from auth_type_enum import AUTH_TYPE
 
-from config_class import LoginConfig
+from .auth_type_enum import AUTH_TYPE
+from .config_class import LoginConfig
 
 class User(LoginConfig.db.Entity):
     username = PrimaryKey(str)
