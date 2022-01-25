@@ -1,7 +1,9 @@
 # Imports
 from multiprocessing.sharedctypes import Value
+from typing import List
 from pony.orm import *
 import bcrypt
+from email.utils import parseaddr
 
 
 from config_class import LoginConfig
@@ -13,16 +15,21 @@ from custom_exceptions import NotInitedException,MissingUserException,AlreadyExi
 import ldap_stuff
 
 
-def create_user(uname="",pw=None,auth=AUTH_TYPE.LOCAL):
+def create_user(uname="",pw=None,email = "",auth=AUTH_TYPE.LOCAL):
 
     if not LoginConfig.inited:
         raise NotInitedException("Config not inited!")
 
-    if not (isinstance(uname,str) or not isinstance(pw,(type(None),str)) or not isinstance(auth, AUTH_TYPE)):
+    if not (isinstance(uname,str) or not isinstance(pw,(type(None),str)) or not isinstance(auth, AUTH_TYPE) or not isinstance(email,str)):
         raise TypeError("supplied args do not match required types")
 
     if len(uname) < LoginConfig.username_min_len:
         raise ValueError("Username to short")
+    
+    if LoginConfig.email_required:
+        full_name,email_new = parseaddr(email)
+        if email != email_new:
+           raise ValueError("Email seems to be invalid!") 
 
     if pw == None and auth != AUTH_TYPE.AD:
         raise ValueError("password empty and auth type not ad!")
@@ -45,10 +52,10 @@ def create_user(uname="",pw=None,auth=AUTH_TYPE.LOCAL):
             pw_hash = None
 
             if pw != None:
-                pw_salt = bcrypt.gensalt(rounds=8)
+                pw_salt = bcrypt.gensalt()
                 pw_hash = bcrypt.hashpw(pw.encode("utf-8"),pw_salt)
 
-            user_to_return = User(username=uname,password_hash=pw_hash,password_salt=pw_salt,auth_type=auth)
+            user_to_return = User(username=uname,password_hash=pw_hash,password_salt=pw_salt,auth_type=auth, email = email)
         
     return True, user_to_return.username     
     
@@ -121,7 +128,7 @@ def login_user(uname="",pw=None):
                     raise NotImplementedError("Auth type not supported!")
 
 #returns bool success
-def logout_user(token="",ip="127.0.0.1"):
+def logout_user(token="",ip="127.0.0.1", force=False):
     
     if not LoginConfig.inited:
         raise NotInitedException("Config not inited!")
@@ -132,13 +139,13 @@ def logout_user(token="",ip="127.0.0.1"):
         if found_token is None:
             raise TokenMissingException("could not find requested Token")
         else:
-            if found_token.ip == ip:
+            if found_token.ip == ip or force:
                 found_token.valid_until = "1999-01-01"
                 return True
             else:
                 return ValueError("ip differs -> not invalidating Token")
 
-def create_token(user=None,ip="127.0.0.1",valid_days=1):
+def create_token(user=None,ip="127.0.0.1",valid_days=1,token_type=Auth_Token):
     
     if not LoginConfig.inited:
         raise NotInitedException("Config not inited!")
@@ -150,6 +157,13 @@ def create_token(user=None,ip="127.0.0.1",valid_days=1):
     if type(valid_days) != int or valid_days < 0:
         raise ValueError("days the token is valid does not make sense!!!")
 
+    print(token_type is Auth_Token)
+    print(token_type is ActivationCode)
+    print(token_type is ResetCode)
+
+    if not (token_type is Auth_Token or token_type is ActivationCode or token_type is ResetCode):
+        raise TypeError("invalid token type submitted!")
+
     with db_session:
         
         found_user=User.get(username=user)
@@ -158,18 +172,26 @@ def create_token(user=None,ip="127.0.0.1",valid_days=1):
             raise MissingUserException("user to create token for does not exist!")
 
         #generate day
+        test = datetime.datetime.now()+ datetime.timedelta(days=valid_days)
         valid_until = datetime.date.today() + datetime.timedelta(days=valid_days)
         date_string = valid_until.strftime("%Y-%m-%d")
 
         #create token!
         token_salt = bcrypt.gensalt()
-        token_to_hash = f"{user}@{ip};valid_until:{date_string}"
+
+        if token_type is Auth_Token:
+            token_to_hash = f"{user}@{ip};valid_until:{date_string}"
+        elif token_type is ActivationCode:
+            token_to_hash = f"{user}-activation"
+        else:
+            token_to_hash = f"{user}-reset;valid_until:{str(test)}"
+        
         token_hash = bcrypt.hashpw(token_to_hash.encode("utf-8"),token_salt)
         token_hex = token_hash.hex()
 
         if LoginConfig.debug_output:
             print(f"""
-        generating token for {user}
+        generating {token_type.__name__} for {user}
 ------------------------------------------------------
 token to hash({len(token_to_hash)}):	{token_to_hash}
 token salt({len(token_salt)}):	        {token_salt}
@@ -179,14 +201,24 @@ hex token({len(token_hash)}):		{token_hex}
 """)
         
         #if user exists
-        token = Auth_Token.get(user=user)
+        token = token_type.get(user=user)
         if token is None:
             #if user has no token generate new one
-            token = Auth_Token(user=user,token=token_hex,ip=ip,valid_until=date_string)
+            if token_type is Auth_Token:
+                token = Auth_Token(user=user,token=token_hex,ip=ip,valid_until=date_string)
+            elif token_type is ActivationCode:
+                token = ActivationCode(user=user,token=token_hex)
+            else:
+                token = ResetCode(user=user,token=token_hex,valid_until=test)
         else:
+            #if user has token update it
             token.token=token_hex
-            token.ip=ip
-            token.valid_until=date_string
+            
+            if type(token_type) is type(Auth_Token):
+                token.valid_until=date_string
+                token.ip=ip
+            elif type(token_type) is type(ActivationCode):
+                token.valid_until=datetime(valid_until)
 
     return token.token
     
@@ -238,29 +270,67 @@ def get_all_perms():
 
     return perms
 
-def assign_perms(user=None,perms=[]):
+def assign_perms(username=None,perms=[]):
 
     if not LoginConfig.inited:
         raise NotInitedException("Config not inited!")
 
-    if len(perms) == 0:
-        return False, "no perms supplied!"
+    if type(perms) != List or type(username) != str:
+        raise ValueError("supplied parameters are invalid!")
 
-    if user is None or len(user) < LoginConfig.username_min_len:
-        return False, "username is to Short or not given!"
+    if len(perms) == 0:
+        raise ValueError("no Parameters supplied!")
+
+    if username is None or len(username) < LoginConfig.username_min_len:
+        raise ValueError("invalid Username supplied!")
 
     with db_session:
-        user = User.get(username=user)
-        if user is not None:
-            msg = "added to the following classes: "
+        user = User.get(username=username)
+        if user is None:
+            raise MissingUserException("User to assign Perms to does not exist!")
+        else:
             for perm in perms:
                 found_perm = Permissions.get(perm_name=perm)
                 if found_perm is not None:
                     user.perms.add(found_perm)
-                    msg += f" {found_perm.perm_name},"
-            return True, msg
+            return True       
+
+def update_password(username=None,password=""):
+
+    if not LoginConfig.inited:
+        raise NotInitedException("Config not inited!")
+
+    if type(password) != str or username != str:
+        raise TypeError("supplied Values not of correct Type")
+
+    if len(password) <= LoginConfig.password_min_len:
+        raise ValueError("password is to short!")
+    
+    with db_session:
+        #check if user exists
+        requested_user = User.get(username=username)
+        if requested_user is None:
+            raise MissingUserException("user to delete does not exist!")
         else:
-            return False, "User not found"
+            pw_salt = bcrypt.gensalt()
+            pw_hash = bcrypt.hashpw(password.encode("utf-8"),pw_salt)
+            requested_user.password_hash = pw_hash
+            requested_user.password_salt = pw_salt
+
+    logout_user(requested_user.token,force=True)
+
+def delete_user(username=None):
+    if not LoginConfig.inited:
+        raise NotInitedException("Config not inited!")
+    
+    with db_session:
+        #check if user exists
+        requested_user = User.get(username=username)
+        if requested_user is None:
+            raise MissingUserException("user to delete does not exist!")
+        else:
+            requested_user.delete()
+            return True
 
 def does_user_exist(user=None):
     

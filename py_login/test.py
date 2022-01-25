@@ -12,10 +12,10 @@ ad_config = AD_Config()
 print(ad_config)
 
 config = DB_Config(provider = "mysql", host = "127.0.0.1",port = 3306, user = "test", pw = "test123", db_name = "users")
-ree = LoginConfig(config,True)
+ree = LoginConfig(config,True,1,4,4,False)
 
 try:
-    print(create_user("admin","12345",AUTH_TYPE.LOCAL))
+    print(create_user(uname="admin",pw="12345",email="test@local",auth=AUTH_TYPE.LOCAL))
 except Exception as err:
     print(err)
 
@@ -25,15 +25,13 @@ user_dict,token_dict,perms_dict = get_extended_info("admin")
 
 print(login_user("admin","12345"))
 
-
-
 try:
     print(login_user("testuser@ad.local","12345"))
 except Exception as err:
     print(f"{type(err).__name__}: {err}")
 
 
-token = create_token("admin")
+token = create_token("admin",token_type=Auth_Token)
 
 print(f"\ncreated token: {token}")
 
@@ -65,3 +63,7 @@ try:
     print(logout_user("doesnotexist"))
 except Exception as err:
     print(f"{type(err).__name__}: {err}")
+
+print("\ntrying to create reset and activation token!")
+create_token("admin",token_type=ResetCode)
+create_token("admin",token_type=ActivationCode)
