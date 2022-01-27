@@ -1,6 +1,4 @@
 # Imports
-from multiprocessing.sharedctypes import Value
-from typing import List
 from pony.orm import *
 import bcrypt
 from email.utils import parseaddr
