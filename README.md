@@ -12,6 +12,9 @@
 <a href="https://pyusermanager.readthedocs.io/en/latest/"><img height="20" alt="Documentation status" src="https://img.shields.io/badge/documentation-up-00FF00.svg"></a>
 </p>
 
+# Dev Branch
+experimentation and other stuff
+
 # 1. Info
 This Project is aimed to simplify building apis which require User authentification
 
