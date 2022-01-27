@@ -235,7 +235,7 @@ def does_user_exist(user=None):
         else:
             return True
 
-def get_extended_info(username):
+def get_extended_info(username, include_email = None):
 
     if not LoginConfig.inited:
         raise NotInitedException("Config not inited!")
@@ -253,6 +253,8 @@ def get_extended_info(username):
             user_dict["auth_type"] = user.auth_type.name
             user_dict["activated"] = user.activated
             user_dict["avatar"] = user.avatar
+            if include_email is not None:
+                user_dict["email"] = user.email
 
             token_dict = {}
             if user.token is not None:
