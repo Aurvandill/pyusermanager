@@ -246,19 +246,18 @@ def get_extended_info(username):
         if user is None:
             #if we found no user return an empty dictionary
             raise MissingUserException("user you are looking for does not exist!")
-            return {}, {}, {}
         
         else:
             user_dict = {}
             user_dict["username"] = user.username
-            user_dict["auth_type"] = user.auth_type
+            user_dict["auth_type"] = user.auth_type.name
             user_dict["activated"] = user.activated
             user_dict["avatar"] = user.avatar
 
             token_dict = {}
             if user.token is not None:
-                token_dict["last_token_generation"] = user.token.last_login
-                token_dict["valid_until"] = user.token.valid_until
+                token_dict["last_login"] = str(user.token.last_login)
+                token_dict["valid_until"] = str(user.token.valid_until)
                 token_dict["valid_for"] = user.token.ip
                 token_dict["token"] = user.token.token
 
