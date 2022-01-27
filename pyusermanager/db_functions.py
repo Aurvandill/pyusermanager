@@ -396,6 +396,7 @@ hex token({len(token_hash)}):		{token_hex}
             if type(token_type) is type(Auth_Token):
                 token.valid_until=valid_until
                 token.ip=ip
+                token.last_login = datetime.datetime.now()
             elif type(token_type) is type(ActivationCode):
                 token.valid_until=valid_until
 
