@@ -53,19 +53,7 @@ class Token(ABC):
     def __str__(self):
 
         if len(self.__dict__) > 0:
-            return_string = f"_________{self.__class__.__name__}_________\n\n"
-            for key, value in self.__dict__.items():
-                if isinstance(value, type(object)):
-                    value = value.__name__
-                if len(key) < 6:
-                    tabs = "\t\t"
-                else:
-                    tabs = " \t"
-                return_string = f"{return_string}{key}:{tabs}{value}\n"
-            return_string = (
-                f"{return_string}___________________________________________\n"
-            )
-            return return_string
+            return str(self.__dict__)
         else:
             return None
 

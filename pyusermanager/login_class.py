@@ -80,17 +80,7 @@ def Login(username, password, Adconfig=AD_Config(False)):
 
         # if user does not exist
         if found_user is None:
-            if Adconfig is not None and Adconfig.login:
-                # perform ldap login
-                if ADLogin(username, password, Adconfig).perform_login():
-                    UserFunctions(False).CreateUser(
-                        username=username, auth_type=AUTH_TYPE.AD, activated=True
-                    )
-                    return True
-                else:
-                    raise ce.MissingUserException
-            else:
-                raise ce.MissingUserException
+            handle_login_missing(username, password, Adconfig)
 
         if found_user.auth_type == AUTH_TYPE.LOCAL:
             return LOCALLogin(username, password).perform_login()
@@ -100,3 +90,17 @@ def Login(username, password, Adconfig=AD_Config(False)):
 
         else:
             raise NotImplementedError
+
+def handle_login_missing(username, password, Adconfig):
+    if Adconfig.login:
+        # perform ldap login
+        if ADLogin(username, password, Adconfig).perform_login():
+            #if successfull ad login create user in local db
+            UserFunctions(False).CreateUser(
+                username=username, auth_type=AUTH_TYPE.AD, activated=True
+            )
+            return True
+        else:
+            raise ce.MissingUserException
+    else:
+        raise ce.MissingUserException
