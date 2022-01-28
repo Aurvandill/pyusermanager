@@ -19,7 +19,7 @@ class User(LoginConfig.db.Entity):
     # we set an avatar with a default value -> changable if LoginConfig
     avatar = Required(str, default="default.png")
 
-    activated = Required(bool, default=LoginConfig.auto_activate_accounts)
+    activated = Required(bool, default=False)
 
     token = Optional("Auth_Token", cascade_delete=True)
     perms = Set("Permissions")

@@ -8,3 +8,6 @@ from .db_functions import *
 from . import ldap_stuff
 
 from . import token_class as Token
+
+from .login_class import Login
+from .user_funcs import UserFunctions
