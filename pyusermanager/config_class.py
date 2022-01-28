@@ -5,39 +5,41 @@ from .db_config_class import DB_Config
 from .auth_type_enum import AuthTypeConverter
 
 
-class LoginConfig():
+class LoginConfig:
 
     inited = False
 
-    #some settings
+    # some settings
     debug_output = False
     password_reset_days_valid = 1
 
-    #for later understanding!
+    # for later understanding!
     auto_activate_accounts = True
     email_required = not auto_activate_accounts
 
-    #lenghts
+    # lenghts
     username_min_len = 4
     password_min_len = 4
 
-    #do we allow public registrations?
+    # do we allow public registrations?
     public_registration = True
     allow_avatars = True
     admin_group_name = "admin"
 
     db = Database()
 
-    def __init__(self,
-                db_config=DB_Config(),debug = False,
-                password_reset_days_valid = 1,
-                username_min_len = 4,
-                password_min_len = 4,
-                auto_activate_accounts = True,
-                public_registration = True,
-                allow_avatars = True,
-                admin_group_name = "admin"
-                ):
+    def __init__(
+        self,
+        db_config=DB_Config(),
+        debug=False,
+        password_reset_days_valid=1,
+        username_min_len=4,
+        password_min_len=4,
+        auto_activate_accounts=True,
+        public_registration=True,
+        allow_avatars=True,
+        admin_group_name="admin",
+    ):
 
         LoginConfig.debug_output = debug
         LoginConfig.username_min_len = username_min_len
@@ -54,15 +56,16 @@ class LoginConfig():
 
         if not LoginConfig.inited:
 
-            LoginConfig.db.bind(provider = db_config.provider,
-                            host = db_config.host,
-                            port = db_config.port,
-                            user = db_config.user,
-                            passwd = db_config.pw,
-                            db = db_config.db_name
-                            )
-            LoginConfig.db.provider.converter_classes.append((Enum,AuthTypeConverter))
-                                  
+            LoginConfig.db.bind(
+                provider=db_config.provider,
+                host=db_config.host,
+                port=db_config.port,
+                user=db_config.user,
+                passwd=db_config.pw,
+                db=db_config.db_name,
+            )
+            LoginConfig.db.provider.converter_classes.append((Enum, AuthTypeConverter))
+
             LoginConfig.db.generate_mapping(create_tables=True)
 
         LoginConfig.inited = True

@@ -1,4 +1,4 @@
-class AD_Config():
+class AD_Config:
 
     inited = False
 
@@ -6,9 +6,16 @@ class AD_Config():
     ad_address = "ldap://127.0.0.1:389"
     base_dn = "ou=User,dc=ad,dc=local"
     ad_group = "allowed_to_login"
-    ad_suffix ="@ad.local"
+    ad_suffix = "@ad.local"
 
-    def __init__(self,ad_login = False, ad_address = "ldap://127.0.0.1:389", base_dn = "ou=User,dc=ad,dc=local", ad_group = "allowed_to_login", ad_suffix ="@ad.local"):
+    def __init__(
+        self,
+        ad_login=False,
+        ad_address="ldap://127.0.0.1:389",
+        base_dn="ou=User,dc=ad,dc=local",
+        ad_group="allowed_to_login",
+        ad_suffix="@ad.local",
+    ):
         if not AD_Config.inited:
             AD_Config.login = ad_login
             AD_Config.address = ad_address
