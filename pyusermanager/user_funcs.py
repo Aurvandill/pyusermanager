@@ -75,18 +75,16 @@ username_min_len:   {self.username_min_len}
     def verify_inputs(self, **kwargs):
 
         found_email = False
-        for key, val in kwargs.items():
-            # verify email if given
-            if key == "email" and val == parseaddr(val)[1]:
-                found_email = True
-            # verify activated if given
-            if key == "activated" and not isinstance(val, bool):
-                raise ValueError("Activated is not bool")
-            # verify password if gien
-            if key == "password" and len(val) < self.password_min_len:
-                raise ValueError("password to short")
-            # verify username if gien
-            if key == "username" and (val == None or len(val) < self.username_min_len):
+        if "email" in kwargs and kwargs.get("email") == parseaddr(kwargs.get("email"))[1]:
+            found_email = True
+        # verify activated if given
+        if "activated" in kwargs and not isinstance(kwargs.get("activates"), bool):
+            raise ValueError("Activated is not bool")
+        # verify password if gien
+        if "password" in kwargs and len(kwargs.get("password")) < self.password_min_len:
+            raise ValueError("password to short")
+        # verify username if gien
+        if "username" in kwargs and (kwargs.get("username") == None or len(kwargs.get("username")) < self.username_min_len):
                 raise ValueError("username to short")
 
         if self.email_required and not found_email:
@@ -133,12 +131,13 @@ username_min_len:   {self.username_min_len}
                 return True
 
     def change(self, **kwargs):
-
-        if "email" in kwargs.items():
+        
+        print(kwargs)
+        if "email" in kwargs:
             self.changeemail(kwargs["email"])
-        if "password" in kwargs.items():
+        if "password" in kwargs:
             self.changepw(kwargs["password"])
-        if "avatar" in kwargs.items():
+        if "avatar" in kwargs:
             self.changeavatar(kwargs["avatar"])
 
     def changepw(self, password):
@@ -149,7 +148,7 @@ username_min_len:   {self.username_min_len}
 
         with db_session:
             try:
-                user = dc.User(self.username)
+                user = dc.User[self.username]
                 pw_salt, pw_hash = self.hash_pw(password)
                 user.password_salt = pw_salt
                 user.password_hash = pw_hash
@@ -165,7 +164,7 @@ username_min_len:   {self.username_min_len}
 
         with db_session:
             try:
-                user = dc.User(self.username)
+                user = dc.User[self.username]
                 user.email = email
                 return True
             except ObjectNotFound:
@@ -177,19 +176,53 @@ username_min_len:   {self.username_min_len}
 
         with db_session:
             try:
-                user = dc.User(self.username)
+                user = dc.User[self.username]
                 user.avatar = avatar
                 return True
             except ObjectNotFound:
                 raise ce.MissingUserException
 
-    def info(self):
+    def info(self, include_email=False):
         with db_session:
             try:
-                user = dc.User(self.username)
+                user = dc.User[self.username]
+                if include_email:
+                    return {
+                        "username": user.username,
+                        "avatar": user.avatar,
+                        "email": user.email,
+                        "activated": user.activated,
+                    }
+                else:
+                    return {
+                        "username": user.username,
+                        "avatar": user.avatar,
+                        "activated": user.activated,
+                    }
 
-                return {
-                    "username": user.username,
-                }
+            except ObjectNotFound:
+                raise ce.MissingUserException
+
+    def info_extended(self):
+        with db_session:
+            try:
+                user = dc.User[self.username]
+                return_dict = self.info(include_email=True)
+                token_dict = {}
+                if user.token is not None:
+                    token_dict["last_login"] = str(user.token.last_login)
+                    token_dict["valid_until"] = str(user.token.valid_until)
+                    token_dict["valid_for"] = user.token.ip
+                    token_dict["token"] = user.token.token
+                # add perms to dict!
+                perm_array = []
+                for perm in user.perms:
+                    perm_array.append(perm.perm_name)
+
+                return_dict["token"] = token_dict
+                return_dict["perms"] = perm_array
+
+                return return_dict
+
             except ObjectNotFound:
                 raise ce.MissingUserException
