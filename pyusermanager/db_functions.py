@@ -295,55 +295,10 @@ def set_avatar(username = "",avatar_filename= ""):
 #
 #######################
 
-def get_token(username = "",token_type = ResetCode):
-    if not LoginConfig.inited:
-        raise NotInitedException("Config not inited!")
 
-    if not (token_type is ResetCode or token_type is ActivationCode or token_type is Auth_Token):
-        raise TypeError("supplied token type is invalid!")
-
-    if type(username) != str:
-        raise TypeError("supplied username is invalid")
-
-    with db_session:
-        token = token_type.get(user = username)
-        if token is None:
-            return ""
-        else:
-            return token.token
-    
-def delete_token(username = "",token_type = ResetCode):
-    if not LoginConfig.inited:
-        raise NotInitedException("Config not inited!")
-
-    if not (token_type is ResetCode or token_type is ActivationCode or token_type is Auth_Token):
-        raise TypeError("supplied token type is invalid!")
-
-    if type(username) != str:
-        raise TypeError("supplied username is invalid")
-
-    with db_session:
-        token = token_type.get(user = username)
-        if token is None:
-            return True
-        else:
-            token.delete()
  
 def create_token(user=None,ip="127.0.0.1",valid_days=1,token_type=Auth_Token):
     
-    if not LoginConfig.inited:
-        raise NotInitedException("Config not inited!")
-
-    if type(user) != str:
-        raise ValueError("user is none")
-    if type(ip) != str:
-        raise ValueError("ip not a string!")
-    if type(valid_days) != int or valid_days < 0:
-        raise ValueError("days the token is valid does not make sense!!!")
-
-    if not (token_type is Auth_Token or token_type is ActivationCode or token_type is ResetCode):
-        raise TypeError("invalid token type submitted!")
-
     with db_session:
         
         found_user=User.get(username=user)
@@ -401,64 +356,6 @@ hex token({len(token_hash)}):		{token_hex}
 
     return token.token
     
-def verify_token(token="",ip="0.0.0.0",token_type=Auth_Token):
-    
-    if not LoginConfig.inited:
-        raise NotInitedException("Config not inited!")
-
-    return_value = (False, [], None)
-
-    #check types of paras
-    if type(token) != str or type(ip) != str:
-        return return_value
-
-    if not(token_type is Auth_Token or token_type is ResetCode or token_type is ActivationCode):
-        return TypeError("submitted tokentype is not valid!")
-
-    else:
-        with db_session:
-            #see if we find the token
-            found_token=token_type.get(token=token)
-
-            if found_token is not None:
-
-                user = found_token.user
-
-                today = datetime.datetime.now()
-                
-
-                #if we find and Activation token thats already enough
-                if token_type is ActivationCode:
-                    user.activated = True
-                    #delete activation token!
-                    found_token.delete()
-                    return (True, [], user.username)
-
-                elif token_type is Auth_Token:
-                    valid_until = found_token.valid_until
-                    if ip == user.token.ip and today <= valid_until:
-                        perm_array = []
-                        for perm in user.perms:
-                            perm_array.append(perm.perm_name)
-                        perm_array.sort()
-                        return_value = (True, perm_array, user.username)
-
-                #Reset-Token
-                else:
-                    valid_until = found_token.valid_until
-                    print(today)
-                    print(valid_until)
-                    print(user.token.valid_until)
-                    if today <= valid_until:
-                        return_value = (True, [], user.username)
-                    else:
-                        return_value = (True, [], "reeeeeeeeee")
-                
-            else:
-                print("did not find token")
-                return_value = (False, [], None)
-    
-    return return_value
 
 #######################
 #

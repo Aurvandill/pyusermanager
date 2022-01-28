@@ -6,3 +6,5 @@ from .data_classes import *
 from .db_config_class import *
 from .db_functions import *
 from . import ldap_stuff
+
+from . import token_class as Token
