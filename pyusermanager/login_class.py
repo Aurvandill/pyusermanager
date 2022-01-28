@@ -82,14 +82,15 @@ def Login(username, password, Adconfig=AD_Config(False)):
         else:
             raise NotImplementedError
 
+
 def handle_login_missing(username, password, Adconfig):
     if Adconfig.login:
         # perform ldap login
         if ADLogin(username, password, Adconfig).perform_login():
-            #if successfull ad login create user in local db
-            UserFunctions(False).create(
-                username=username, auth_type=AUTH_TYPE.AD, activated=True
-            )
+            # if successfull ad login create user in local db
+            userfunc = UserFunctions(username, AUTH_TYPE.AD)
+
+            userfunc.create(activated=True)
             return True
         else:
             raise ce.MissingUserException

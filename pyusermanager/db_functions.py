@@ -52,8 +52,6 @@ def get_users():
     return users_dict
 
 
-
-
 def update_password(username=None, password=""):
 
     if not LoginConfig.inited:

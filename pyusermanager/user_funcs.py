@@ -26,15 +26,12 @@ username_min_len:   {self.username_min_len}
 
         """
 
-    def __init__(
-        self, email_required=None, password_min_len=None, username_min_len=None
-    ):
-        if email_required is not None:
-            self.email_required = email_required
-        if password_min_len is not None:
-            self.password_min_len = password_min_len
-        if username_min_len is not None:
-            self.username_min_len = username_min_len
+    def __init__(self,username,auth_type=AUTH_TYPE.LOCAL):
+
+        if auth_type != AUTH_TYPE.AD and "@" in username:
+            raise ValueError("@ in username is reserved for ad Users!")    
+        self.username = username
+        self.auth_type = AUTH_TYPE.LOCAL
 
     def verify_inputs(self, **kwargs):
 
@@ -50,10 +47,10 @@ username_min_len:   {self.username_min_len}
         if self.email_required and not found_email:
             raise ValueError("Email required but no valid provided!")
 
-    def create(self, username, password=None, auth_type=AUTH_TYPE.LOCAL, **kwargs):
+    def create(self, password=None, **kwargs):
         with db_session:
             try:
-                dc.User[username]
+                dc.User[self.username]
                 raise ce.AlreadyExistsException
             except ObjectNotFound as err:
 
@@ -62,7 +59,7 @@ username_min_len:   {self.username_min_len}
                 if len(password) < self.password_min_len:
                     raise ValueError("password to short")
 
-                if "@" in username and auth_type != AUTH_TYPE.AD:
+                if "@" in self.username and self.auth_type != AUTH_TYPE.AD:
                     raise ValueError(
                         "non ad users are not allowed to have @ in their name!"
                     )
@@ -70,33 +67,60 @@ username_min_len:   {self.username_min_len}
                 pw_salt, pw_hash = self.hash_pw(password)
 
                 dc.User(
-                    username=username,
+                    username=self.username,
                     password_hash=pw_hash,
                     password_salt=pw_salt,
-                    auth_type=auth_type,
+                    auth_type=self.auth_type,
                     **kwargs,
                 )
                 return True
     
-    def delete(username):
+    def delete(self):
   
         with db_session:
             # check if user exists
-            requested_user = dc.User.get(username=username)
+            requested_user = dc.User.get(username=self.username)
             if requested_user is None:
                 raise ce.MissingUserException("user to delete does not exist!")
             else:
                 requested_user.delete()
                 return True
 
-    def check(username):
+    def check(self):
         with db_session:
             # check if user exists
-            requested_user = dc.User.get(username=username)
+            requested_user = dc.User.get(username=self.username)
             if requested_user is None:
                 return False
             else:
                 return True
+
+
+    def change(self,**kwargs):
+
+        if "email" in kwargs.items():
+            self.changeemail(kwargs["email"])
+        if "password" in kwargs.items():
+            self.changepw(kwargs["password"])
+        if "avatar" in kwargs.items():
+            self.changeavatar(kwargs["avatar"])           
+
+    def changepw(self,password):
+
+
+        pass
+
+    def changeemail(self,email):
+
+
+        pass
+
+    def changeavatar(self,avatar):
+
+        with db_session:
+            pass
+
+        pass
 
     def hash_pw(self,password=None):
         if password is None:
