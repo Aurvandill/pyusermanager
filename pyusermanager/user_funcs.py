@@ -16,8 +16,9 @@ class UserFunctions:
     email_required = False
     password_min_len = 4
     username_min_len = 4
+    activated = not email_required
 
-    def __str__(self):
+    def config(self):
         return f"""
 --User Function Settings--
 email_required:     {self.email_required}
@@ -26,12 +27,41 @@ username_min_len:   {self.username_min_len}
 
         """
 
-    def __init__(self,username,auth_type=AUTH_TYPE.LOCAL):
+    def __str__(self):
+        if len(self.__dict__) > 0:
+            return str(self.__dict__)
+        return None
 
-        if auth_type != AUTH_TYPE.AD and "@" in username:
-            raise ValueError("@ in username is reserved for ad Users!")    
-        self.username = username
+    def __init__(self, username=None, auth_type=AUTH_TYPE.LOCAL):
+        if username is not None:
+            self.verify_inputs(username=username)
+
+        if auth_type != AUTH_TYPE.AD and "@" in str(username):
+            raise ValueError("@ in username is reserved for ad Users!")
+        self.username = str(username)
         self.auth_type = AUTH_TYPE.LOCAL
+
+    """
+    Gets all users including avatars
+    retuns an array with a dictionary for each user
+    example:
+    [{"username": "admin","avatar":"admin.png"},{"username": "testuser","avatar":"default.png"}]
+    """
+
+    @staticmethod
+    def get_users():
+        userlist = []
+        with db_session:
+            users = dc.User.select()
+
+            for user in users:
+                user_dict = {
+                    "username": user.username,
+                    "avatar": user.avatar,
+                }
+                userlist.append(user_dict)
+
+        return userlist
 
     def verify_inputs(self, **kwargs):
 
@@ -40,8 +70,14 @@ username_min_len:   {self.username_min_len}
             # verify email if given
             if key == "email" and val == parseaddr(val)[1]:
                 found_email = True
-            # verify activated if gien
+            # verify activated if given
             if key == "activated" and not isinstance(val, bool):
+                raise ValueError("Activates is not bool")
+            # verify password if gien
+            if key == "password" and len(val) < self.password_min_len:
+                raise ValueError("Activates is not bool")
+            # verify username if gien
+            if key == "username" and len(val) < self.username_min_len:
                 raise ValueError("Activates is not bool")
 
         if self.email_required and not found_email:
@@ -54,15 +90,7 @@ username_min_len:   {self.username_min_len}
                 raise ce.AlreadyExistsException
             except ObjectNotFound as err:
 
-                self.verify_inputs(**kwargs)
-
-                if len(password) < self.password_min_len:
-                    raise ValueError("password to short")
-
-                if "@" in self.username and self.auth_type != AUTH_TYPE.AD:
-                    raise ValueError(
-                        "non ad users are not allowed to have @ in their name!"
-                    )
+                self.verify_inputs(**kwargs, password=password)
 
                 pw_salt, pw_hash = self.hash_pw(password)
 
@@ -74,9 +102,9 @@ username_min_len:   {self.username_min_len}
                     **kwargs,
                 )
                 return True
-    
+
     def delete(self):
-  
+
         with db_session:
             # check if user exists
             requested_user = dc.User.get(username=self.username)
@@ -95,34 +123,31 @@ username_min_len:   {self.username_min_len}
             else:
                 return True
 
-
-    def change(self,**kwargs):
+    def change(self, **kwargs):
 
         if "email" in kwargs.items():
             self.changeemail(kwargs["email"])
         if "password" in kwargs.items():
             self.changepw(kwargs["password"])
         if "avatar" in kwargs.items():
-            self.changeavatar(kwargs["avatar"])           
+            self.changeavatar(kwargs["avatar"])
 
-    def changepw(self,password):
-
-
-        pass
-
-    def changeemail(self,email):
-
+    def changepw(self, password):
 
         pass
 
-    def changeavatar(self,avatar):
+    def changeemail(self, email):
+
+        pass
+
+    def changeavatar(self, avatar):
 
         with db_session:
             pass
 
         pass
 
-    def hash_pw(self,password=None):
+    def hash_pw(self, password=None):
         if password is None:
             return None, None
         else:

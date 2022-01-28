@@ -31,27 +31,6 @@ from . import ldap_stuff
 #######################
 
 
-def get_users():
-
-    users_dict = {}
-
-    with db_session:
-        users = User.select()
-        userlist = []
-        for user in users:
-            user_dict = {
-                "username": user.username,
-                "avatar": user.avatar,
-                "activated": user.activated,
-            }
-            userlist.append(user_dict)
-
-        # append userlist to dictionaries
-        users_dict["users"] = userlist
-
-    return users_dict
-
-
 def update_password(username=None, password=""):
 
     if not LoginConfig.inited:
