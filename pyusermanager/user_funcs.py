@@ -40,10 +40,10 @@ username_min_len:   {self.username_min_len}
 
         found_email = False
         for key, val in kwargs.items():
-            #verify email if given
+            # verify email if given
             if key == "email" and val == parseaddr(val)[1]:
                 found_email = True
-            #verify activated if gien
+            # verify activated if gien
             if key == "activated" and not isinstance(val, bool):
                 raise ValueError("Activates is not bool")
 
@@ -53,7 +53,7 @@ username_min_len:   {self.username_min_len}
     def CreateUser(self, username, password=None, auth_type=AUTH_TYPE.LOCAL, **kwargs):
         with db_session:
             try:
-                user = dc.User[username]
+                dc.User[username]
                 raise ce.AlreadyExistsException
             except ObjectNotFound as err:
 
@@ -61,18 +61,15 @@ username_min_len:   {self.username_min_len}
 
                 if len(password) < self.password_min_len:
                     raise ValueError("password to short")
-                
+
                 if "@" in username and auth_type != AUTH_TYPE.AD:
-                    raise ValueError("non ad users are not allowed to have @ in their name!")
+                    raise ValueError(
+                        "non ad users are not allowed to have @ in their name!"
+                    )
 
-                pw_salt = None
-                pw_hash = None
+                pw_salt, pw_hash = self.hash_pw(password)
 
-                if password != None:
-                    pw_salt = bcrypt.gensalt()
-                    pw_hash = bcrypt.hashpw(password.encode("utf-8"), pw_salt)
-
-                user = dc.User(
+                dc.User(
                     username=username,
                     password_hash=pw_hash,
                     password_salt=pw_salt,
@@ -80,3 +77,11 @@ username_min_len:   {self.username_min_len}
                     **kwargs,
                 )
                 return True
+
+    def hash_pw(password=None):
+        if password is None:
+            return None, None
+        else:
+            pw_salt = bcrypt.gensalt()
+            pw_hash = bcrypt.hashpw(password.encode("utf-8"), pw_salt)
+            return pw_salt, pw_hash

@@ -25,16 +25,7 @@ class LoginHandler(ABC):
     def __str__(self):
 
         if len(self.__dict__) > 0:
-            return_string = f"_________{self.__class__.__name__}_________\n\n"
-            # iterate over every item in class
-            for key, value in self.__dict__.items():
-                # if value is object we want to shorten it to the class name!
-                if isinstance(value, type(object)):
-                    value = value.__name__
-                # add to return string
-                return_string += "{key}: {value}\n"
-            return_string += "___________________________________________\n"
-            return return_string
+            return self.__dict__
         else:
             return None
 
