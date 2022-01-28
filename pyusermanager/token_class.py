@@ -85,12 +85,12 @@ class Auth(Token):
 
             if found_token is None:
                 raise ce.TokenMissingException("could not find requested Token")
+            
+            if found_token.ip == ip or force:
+                found_token.valid_until = "1999-01-01"
+                return True
             else:
-                if found_token.ip == ip or force:
-                    found_token.valid_until = "1999-01-01"
-                    return True
-                else:
-                    return ValueError("ip differs -> not invalidating Token")
+                return ValueError("ip differs -> not invalidating Token")
 
     def verify(self, ip):
         with db_session:
