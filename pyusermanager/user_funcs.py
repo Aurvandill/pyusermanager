@@ -40,11 +40,11 @@ username_min_len:   {self.username_min_len}
 
         found_email = False
         for key, val in kwargs.items():
-            if key == "email" and self.email_required:
-                full_name, email_new = parseaddr(val)
-                if val == email_new:
-                    found_email = True
-            if key == "activated" and not (val is True or val is False):
+            #verify email if given
+            if key == "email" and val == parseaddr(val)[1]:
+                found_email = True
+            #verify activated if gien
+            if key == "activated" and not isinstance(val, bool):
                 raise ValueError("Activates is not bool")
 
         if self.email_required and not found_email:

@@ -12,6 +12,7 @@ from .ad_config_class import AD_Config
 from .auth_type_enum import AUTH_TYPE
 from .user_funcs import UserFunctions
 
+
 class LoginHandler(ABC):
     def __init__(self, username, password):
         self.username = username
@@ -25,17 +26,14 @@ class LoginHandler(ABC):
 
         if len(self.__dict__) > 0:
             return_string = f"_________{self.__class__.__name__}_________\n\n"
+            # iterate over every item in class
             for key, value in self.__dict__.items():
+                # if value is object we want to shorten it to the class name!
                 if isinstance(value, type(object)):
                     value = value.__name__
-                if len(key) < 6:
-                    tabs = "\t\t"
-                else:
-                    tabs = " \t"
-                return_string = f"{return_string}{key}:{tabs}{value}\n"
-            return_string = (
-                f"{return_string}___________________________________________\n"
-            )
+                # add to return string
+                return_string += "{key}: {value}\n"
+            return_string += "___________________________________________\n"
             return return_string
         else:
             return None
@@ -85,7 +83,9 @@ def Login(username, password, Adconfig=AD_Config(False)):
             if Adconfig is not None and Adconfig.login:
                 # perform ldap login
                 if ADLogin(username, password, Adconfig).perform_login():
-                    UserFunctions(False).CreateUser(username=username, auth_type=AUTH_TYPE.AD, activated=True)
+                    UserFunctions(False).CreateUser(
+                        username=username, auth_type=AUTH_TYPE.AD, activated=True
+                    )
                     return True
                 else:
                     raise ce.MissingUserException
