@@ -98,7 +98,7 @@ username_min_len:   {self.username_min_len}
             else:
                 return True
 
-    def hash_pw(password=None):
+    def hash_pw(self,password=None):
         if password is None:
             return None, None
         else:
