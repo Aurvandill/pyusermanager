@@ -103,13 +103,9 @@ class Auth(Token):
                 if ip == user.token.ip and now <= valid_until:
                     self.username = user.username
                     return True
-                else:
-                    return False
-            # no token given!
-            except ValueError:
                 return False
-            # no token found
-            except AttributeError:
+            # no token given or no token found
+            except (ValueError,AttributeError):
                 return False
 
     def create(self, ip=None, valid_days=1):
@@ -162,12 +158,9 @@ class Activation(Token):
                 self.token = None
                 self.username = user.username
                 return True
-            # no token given!
-            except ValueError:
+            # no token given or no token found
+            except (ValueError,AttributeError):
                 return False
-            # no token found
-            except AttributeError:
-                return True
 
     def create(self):
         token_to_hash = f"{self.username}-activation"
@@ -216,14 +209,10 @@ class Reset(Token):
                 if now <= valid_until:
                     self.username = user.username
                     return True
-                else:
-                    return False
-            # no token given!
-            except ValueError:
                 return False
-            # no token found
-            except AttributeError:
-                return True
+            # no token given or no token found
+            except (ValueError,AttributeError):
+                return False
 
     def create(self):
         valid_until = datetime.datetime.now() + datetime.timedelta(days=1)

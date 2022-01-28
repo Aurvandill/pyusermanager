@@ -63,6 +63,15 @@ username_min_len:   {self.username_min_len}
 
         return userlist
 
+    @staticmethod
+    def hash_pw(password=None):
+        if password is None:
+            return None, None
+        else:
+            pw_salt = bcrypt.gensalt()
+            pw_hash = bcrypt.hashpw(password.encode("utf-8"), pw_salt)
+            return pw_salt, pw_hash
+
     def verify_inputs(self, **kwargs):
 
         found_email = False
@@ -72,13 +81,13 @@ username_min_len:   {self.username_min_len}
                 found_email = True
             # verify activated if given
             if key == "activated" and not isinstance(val, bool):
-                raise ValueError("Activates is not bool")
+                raise ValueError("Activated is not bool")
             # verify password if gien
             if key == "password" and len(val) < self.password_min_len:
-                raise ValueError("Activates is not bool")
+                raise ValueError("password to short")
             # verify username if gien
-            if key == "username" and len(val) < self.username_min_len:
-                raise ValueError("Activates is not bool")
+            if key == "username" and (val == None or len(val) < self.username_min_len):
+                raise ValueError("username to short")
 
         if self.email_required and not found_email:
             raise ValueError("Email required but no valid provided!")
@@ -133,24 +142,54 @@ username_min_len:   {self.username_min_len}
             self.changeavatar(kwargs["avatar"])
 
     def changepw(self, password):
+        if password is None:
+            raise ValueError("password empty!")
 
-        pass
-
-    def changeemail(self, email):
-
-        pass
-
-    def changeavatar(self, avatar):
+        self.verify_inputs(password=password)
 
         with db_session:
-            pass
+            try:
+                user = dc.User(self.username)
+                pw_salt, pw_hash = self.hash_pw(password)
+                user.password_salt = pw_salt
+                user.password_hash = pw_hash
+                return True
+            except ObjectNotFound:
+                raise ce.MissingUserException
 
-        pass
+    def changeemail(self, email):
+        if email is None:
+            raise ValueError("email is empty!")
 
-    def hash_pw(self, password=None):
-        if password is None:
-            return None, None
-        else:
-            pw_salt = bcrypt.gensalt()
-            pw_hash = bcrypt.hashpw(password.encode("utf-8"), pw_salt)
-            return pw_salt, pw_hash
+        self.verify_inputs(email=email)
+
+        with db_session:
+            try:
+                user = dc.User(self.username)
+                user.email = email
+                return True
+            except ObjectNotFound:
+                raise ce.MissingUserException
+
+    def changeavatar(self, avatar):
+        if avatar is None:
+            raise ValueError("avatar name is invalid!")
+
+        with db_session:
+            try:
+                user = dc.User(self.username)
+                user.avatar = avatar
+                return True
+            except ObjectNotFound:
+                raise ce.MissingUserException
+
+    def info(self):
+        with db_session:
+            try:
+                user = dc.User(self.username)
+
+                return {
+                    "username": user.username,
+                }
+            except ObjectNotFound:
+                raise ce.MissingUserException
