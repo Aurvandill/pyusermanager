@@ -87,7 +87,7 @@ def handle_login_missing(username, password, Adconfig):
         # perform ldap login
         if ADLogin(username, password, Adconfig).perform_login():
             #if successfull ad login create user in local db
-            UserFunctions(False).CreateUser(
+            UserFunctions(False).create(
                 username=username, auth_type=AUTH_TYPE.AD, activated=True
             )
             return True

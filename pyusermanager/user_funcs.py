@@ -50,7 +50,7 @@ username_min_len:   {self.username_min_len}
         if self.email_required and not found_email:
             raise ValueError("Email required but no valid provided!")
 
-    def CreateUser(self, username, password=None, auth_type=AUTH_TYPE.LOCAL, **kwargs):
+    def create(self, username, password=None, auth_type=AUTH_TYPE.LOCAL, **kwargs):
         with db_session:
             try:
                 dc.User[username]
@@ -76,6 +76,26 @@ username_min_len:   {self.username_min_len}
                     auth_type=auth_type,
                     **kwargs,
                 )
+                return True
+    
+    def delete(username):
+  
+        with db_session:
+            # check if user exists
+            requested_user = dc.User.get(username=username)
+            if requested_user is None:
+                raise ce.MissingUserException("user to delete does not exist!")
+            else:
+                requested_user.delete()
+                return True
+
+    def check(username):
+        with db_session:
+            # check if user exists
+            requested_user = dc.User.get(username=username)
+            if requested_user is None:
+                return False
+            else:
                 return True
 
     def hash_pw(password=None):

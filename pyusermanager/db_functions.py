@@ -51,22 +51,7 @@ def get_users():
 
     return users_dict
 
-def logout_user(token="", ip="127.0.0.1", force=False):
 
-    if not LoginConfig.inited:
-        raise NotInitedException("Config not inited!")
-
-    with db_session:
-        found_token = Auth_Token.get(token=token)
-
-        if found_token is None:
-            raise TokenMissingException("could not find requested Token")
-        else:
-            if found_token.ip == ip or force:
-                found_token.valid_until = "1999-01-01"
-                return True
-            else:
-                return ValueError("ip differs -> not invalidating Token")
 
 
 def update_password(username=None, password=""):
@@ -95,36 +80,6 @@ def update_password(username=None, password=""):
             # delete reset token if it exists!
             if requested_user.reset_code is not None:
                 requested_user.reset_code.delete()
-
-
-def delete_user(username=None):
-    if not LoginConfig.inited:
-        raise NotInitedException("Config not inited!")
-
-    with db_session:
-        # check if user exists
-        requested_user = User.get(username=username)
-        if requested_user is None:
-            raise MissingUserException("user to delete does not exist!")
-        else:
-            requested_user.delete()
-            return True
-
-
-def does_user_exist(user=None):
-
-    if not LoginConfig.inited:
-        raise NotInitedException("Config not inited!")
-
-    if user is None:
-        return False
-    with db_session:
-        user = User.get(username=user)
-        if user is None:
-            # if we found no user return an empty dictionary
-            return False
-        else:
-            return True
 
 
 def get_extended_info(username, include_email=None):
@@ -183,114 +138,4 @@ def set_avatar(username="", avatar_filename=""):
 
     return True
 
-#######################
-#
-# Perm/Group Stuff
-#
-#######################
 
-
-def create_perm(perm_name=None):
-
-    if not LoginConfig.inited:
-        raise NotInitedException("Config not inited!")
-
-    if type(perm_name) != str:
-        raise TypeError("supplied args not valid!")
-
-    # perm creation!
-
-    with db_session:
-        # check if perm exists
-        perm = Permissions.get(perm_name=perm_name)
-
-        if perm is not None:
-            return False
-        else:
-            # create perm
-            perm = Permissions(perm_name=perm_name)
-
-    return True
-
-
-def delete_perm(perm_name=None):
-    if not LoginConfig.inited:
-        raise NotInitedException("Config not inited!")
-
-    if type(perm_name) != str:
-        raise TypeError("supplied args not valid!")
-
-    with db_session:
-        # check if perm exists
-        perm = Permissions.get(perm_name=perm_name)
-
-        if perm is None:
-            return False
-        else:
-            # delete perm
-            perm.delete()
-
-    return True
-
-
-def assign_perm_to_user(username=None, perm=None):
-
-    if not LoginConfig.inited:
-        raise NotInitedException("Config not inited!")
-
-    if type(perm) != str or type(username) != str:
-        raise ValueError("supplied parameters are invalid!")
-
-    if username is None or len(username) < LoginConfig.username_min_len:
-        raise ValueError("invalid Username supplied!")
-
-    with db_session:
-        user = User.get(username=username)
-        if user is None:
-            raise MissingUserException("User to assign Perms to does not exist!")
-        else:
-            found_perm = Permissions.get(perm_name=perm)
-            if found_perm is not None:
-                user.perms.add(found_perm)
-                return True
-
-    return False
-
-
-def remove_perm_from_user(username=None, perm=None):
-    if not LoginConfig.inited:
-        raise NotInitedException("Config not inited!")
-
-    if type(perm) != str or type(username) != str:
-        raise ValueError("supplied parameters are invalid!")
-
-    if username is None or len(username) < LoginConfig.username_min_len:
-        raise ValueError("invalid Username supplied!")
-
-    with db_session:
-        user = User.get(username=username)
-        if user is None:
-            raise MissingUserException("User to assign Perms to does not exist!")
-        else:
-            # check if user has perm
-
-            found_perm = Permissions.get(perm_name=perm)
-            if found_perm is not None:
-                user.perms.remove(found_perm)
-                return True
-
-    return False
-
-
-def get_all_perms():
-
-    if not LoginConfig.inited:
-        raise NotInitedException("Config not inited!")
-
-    perms = []
-
-    with db_session:
-        for perm in Permissions.select():
-            perms.append(perm.perm_name)
-
-    return perms

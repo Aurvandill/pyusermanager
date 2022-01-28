@@ -35,10 +35,10 @@ class Token(ABC):
     def set_user(self, username):
         self.username = username
 
-    def get(self, username):
+    def get_token(self):
         with db_session:
             try:
-                self.token = self.type.get(user=username).token
+                self.token = self.type.get(user=self.username).token
             except AttributeError:
                 raise ce.TokenMissingException
 
@@ -78,6 +78,19 @@ class Auth(Token):
     def __init__(self, token=None):
         self.type = dc.Auth_Token
         super().__init__(token)
+
+    def invalidate(self,ip = "127.0.0.1", force = False):
+        with db_session:
+            found_token = dc.Auth_Token.get(token=self.token)
+
+            if found_token is None:
+                raise ce.TokenMissingException("could not find requested Token")
+            else:
+                if found_token.ip == ip or force:
+                    found_token.valid_until = "1999-01-01"
+                    return True
+                else:
+                    return ValueError("ip differs -> not invalidating Token")
 
     def verify(self, ip):
         with db_session:

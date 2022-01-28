@@ -11,3 +11,4 @@ from . import token_class as Token
 
 from .login_class import Login
 from .user_funcs import UserFunctions
+from .perms_class import Perm
