@@ -4,6 +4,7 @@ import datetime
 
 from pyusermanager import AUTH_TYPE
 
+
 def define_entitys(db):
     class User(db.Entity):
         username = PrimaryKey(str)
@@ -20,7 +21,6 @@ def define_entitys(db):
         reset_code = Optional("ResetCode", cascade_delete=True)
         activation_code = Optional("ActivationCode", cascade_delete=True)
 
-
     class Auth_Token(db.Entity):
         user = PrimaryKey(User)
         token = Required(str)
@@ -28,18 +28,15 @@ def define_entitys(db):
         valid_until = Required(datetime.datetime, default=datetime.datetime.utcnow)
         last_login = Required(datetime.datetime, default=datetime.datetime.utcnow)
 
-
     class Permissions(db.Entity):
         perm_name = PrimaryKey(str)
         user_reference = Set(User)
-
 
     # passwort-Reset Table containg hashes
     class ResetCode(db.Entity):
         user = PrimaryKey(User)
         token = Required(str)
         valid_until = Required(datetime.datetime, default=datetime.datetime.utcnow)
-
 
     # activation-table contains hashes send to users to activate their accounts!
     class ActivationCode(db.Entity):

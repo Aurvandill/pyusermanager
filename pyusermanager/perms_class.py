@@ -1,10 +1,9 @@
 from pony.orm import *
-from . import data_classes as dc
 from . import custom_exceptions as ce
 
 
 class Perm:
-    def __init__(self,config, name):
+    def __init__(self, config, name):
         self.config = config
         self.perm_name = name
 

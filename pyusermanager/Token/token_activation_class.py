@@ -42,7 +42,9 @@ class Activation(Token):
 
             # create new token if no token exists
             if token is None:
-                self.config.db.ActivationCode(user=found_user.username, token=self.token)
+                self.config.db.ActivationCode(
+                    user=found_user.username, token=self.token
+                )
 
             # if token exists update it
             else:

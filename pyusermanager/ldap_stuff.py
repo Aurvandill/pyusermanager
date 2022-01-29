@@ -1,11 +1,11 @@
 import ldap
 
-class LdapStuff():
 
-    def __init__(self,config):
+class LdapStuff:
+    def __init__(self, config):
         self.config = config
 
-    def authenticate(self,username, password):
+    def authenticate(self, username, password):
         conn = ldap.initialize(self.config.address)
         conn.protocol_version = 3
         conn.set_option(ldap.OPT_REFERRALS, 0)
@@ -16,8 +16,7 @@ class LdapStuff():
         conn.simple_bind_s(username, password)
         return conn
 
-
-    def get_ldap_groups(self,username, password):
+    def get_ldap_groups(self, username, password):
 
         ldap_c = self.authenticate(username, password)
         userfilter = f"(&(objectClass=user)(sAMAccountName={username}))"
@@ -30,7 +29,6 @@ class LdapStuff():
             group = group[group.index("CN=") + 3 : group.index(",")]
             groups.append(group)
         return groups
-
 
     def login(self, username, password):
         try:

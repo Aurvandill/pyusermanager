@@ -74,7 +74,10 @@ username_min_len:   {self.username_min_len}
     def verify_inputs(self, **kwargs):
 
         found_email = False
-        if "email" in kwargs and kwargs.get("email") == parseaddr(kwargs.get("email"))[1]:
+        if (
+            "email" in kwargs
+            and kwargs.get("email") == parseaddr(kwargs.get("email"))[1]
+        ):
             found_email = True
         # verify activated if given
         if "activated" in kwargs and not isinstance(kwargs.get("activates"), bool):
@@ -83,8 +86,11 @@ username_min_len:   {self.username_min_len}
         if "password" in kwargs and len(kwargs.get("password")) < self.password_min_len:
             raise ValueError("password to short")
         # verify username if gien
-        if "username" in kwargs and (kwargs.get("username") == None or len(kwargs.get("username")) < self.username_min_len):
-                raise ValueError("username to short")
+        if "username" in kwargs and (
+            kwargs.get("username") == None
+            or len(kwargs.get("username")) < self.username_min_len
+        ):
+            raise ValueError("username to short")
 
         if self.email_required and not found_email:
             raise ValueError("Email required but no valid provided!")
@@ -115,7 +121,9 @@ username_min_len:   {self.username_min_len}
             # check if user exists
             requested_user = self.cfg.db.User.get(username=self.username)
             if requested_user is None:
-                raise PyUserExceptions.MissingUserException("user to delete does not exist!")
+                raise PyUserExceptions.MissingUserException(
+                    "user to delete does not exist!"
+                )
             else:
                 requested_user.delete()
                 return True
@@ -130,7 +138,7 @@ username_min_len:   {self.username_min_len}
                 return True
 
     def change(self, **kwargs):
-        
+
         print(kwargs)
         if "email" in kwargs:
             self.changeemail(kwargs["email"])
