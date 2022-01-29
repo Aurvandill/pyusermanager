@@ -1,22 +1,19 @@
 from abc import ABC, abstractmethod
-from .ldap_stuff import LdapStuff
-
 from pony.orm import *
-
 import bcrypt
 
-from . import custom_exceptions as ce
-from . import data_classes as dc
 
-from .ad_config_class import AD_Config
-from .auth_type_enum import AUTH_TYPE
-from .user_funcs import UserFunctions
+from pyusermanager import LdapStuff
+from pyusermanager import AUTH_TYPE
+from pyusermanager import UserFunctions
+from pyusermanager import PyUserExceptions
 
 
 class LoginHandler(ABC):
-    def __init__(self, username, password):
+    def __init__(self, config, username, password):
         self.username = username
         self.password = password
+        self.config = config
 
     @abstractmethod
     def perform_login():
@@ -37,13 +34,13 @@ class LoginHandler(ABC):
 
 
 class ADLogin(LoginHandler):
-    def __init__(self, username, password, config):
+    def __init__(self, config, username, password):
         if username.endswith(self.config.suffix):
             username = username[: -len(self.config.suffix)]
             self.config = config
             super().__init__(username, password)
         else:
-            raise ce.NotAnADUser
+            raise PyUserExceptions.NotAnADUser
 
     def perform_login(self):
         ldap_auth = LdapStuff(self.config)
@@ -57,33 +54,34 @@ class ADLogin(LoginHandler):
 class LOCALLogin(LoginHandler):
     def perform_login(self):
         with db_session:
-            requested_user = dc.User.get(username=self.username)
+            requested_user = self.config.db.User.get(username=self.username)
             salt = requested_user.password_salt
             new_hash = bcrypt.hashpw(self.password.encode("utf-8"), salt)
 
             return new_hash == requested_user.password_hash
 
 
-def Login(username, password, Adconfig=AD_Config(False)):
+def Login(config, username, password):
 
     with db_session:
-        found_user = dc.User.get(username=username)
+        found_user = config.db.User.get(username=username)
 
         # if user does not exist
         if found_user is None:
-            handle_login_missing(username, password, Adconfig)
+            handle_login_missing(config, username, password)
 
         if found_user.auth_type == AUTH_TYPE.LOCAL:
-            return LOCALLogin(username, password).perform_login()
+            return LOCALLogin(config, username, password).perform_login()
 
-        elif found_user.auth_type == AUTH_TYPE.AD and AD_Config.login:
-            return ADLogin(username, password, Adconfig).perform_login()
+        elif found_user.auth_type == AUTH_TYPE.AD and config.adcfg.login:
+            return ADLogin(config, username, password, config.adcfg).perform_login()
 
         else:
             raise NotImplementedError
 
 
-def handle_login_missing(username, password, Adconfig):
+def handle_login_missing(config, username, password):
+    Adconfig = config.adcfg
     if Adconfig.login:
         # perform ldap login
         if ADLogin(username, password, Adconfig).perform_login():
@@ -93,6 +91,6 @@ def handle_login_missing(username, password, Adconfig):
             userfunc.create(activated=True)
             return True
         else:
-            raise ce.MissingUserException
+            raise PyUserExceptions.MissingUserException
     else:
-        raise ce.MissingUserException
+        raise PyUserExceptions.MissingUserException

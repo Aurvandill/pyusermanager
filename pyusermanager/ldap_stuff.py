@@ -1,7 +1,5 @@
 import ldap
 
-from .config_class import LoginConfig
-
 class LdapStuff():
 
     def __init__(self,config):

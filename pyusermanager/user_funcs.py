@@ -4,8 +4,7 @@ from pony.orm import *
 
 import bcrypt
 
-from . import custom_exceptions as ce
-from . import data_classes as dc
+from pyusermanager import custom_exceptions as PyUserExceptions
 from .auth_type_enum import AUTH_TYPE
 
 
@@ -32,7 +31,8 @@ username_min_len:   {self.username_min_len}
             return str(self.__dict__)
         return None
 
-    def __init__(self, username=None, auth_type=AUTH_TYPE.LOCAL):
+    def __init__(self, config, username=None, auth_type=AUTH_TYPE.LOCAL):
+        self.cfg = config
         if username is not None:
             self.verify_inputs(username=username)
 
@@ -48,11 +48,10 @@ username_min_len:   {self.username_min_len}
     [{"username": "admin","avatar":"admin.png"},{"username": "testuser","avatar":"default.png"}]
     """
 
-    @staticmethod
-    def get_users():
+    def get_users(self):
         userlist = []
         with db_session:
-            users = dc.User.select()
+            users = self.cfg.db.User.select()
 
             for user in users:
                 user_dict = {
@@ -93,15 +92,15 @@ username_min_len:   {self.username_min_len}
     def create(self, password=None, **kwargs):
         with db_session:
             try:
-                dc.User[self.username]
-                raise ce.AlreadyExistsException
+                self.cfg.db.User[self.username]
+                raise PyUserExceptions.AlreadyExistsException
             except ObjectNotFound as err:
 
                 self.verify_inputs(**kwargs, password=password)
 
                 pw_salt, pw_hash = self.hash_pw(password)
 
-                dc.User(
+                self.cfg.db.User(
                     username=self.username,
                     password_hash=pw_hash,
                     password_salt=pw_salt,
@@ -114,9 +113,9 @@ username_min_len:   {self.username_min_len}
 
         with db_session:
             # check if user exists
-            requested_user = dc.User.get(username=self.username)
+            requested_user = self.cfg.db.User.get(username=self.username)
             if requested_user is None:
-                raise ce.MissingUserException("user to delete does not exist!")
+                raise PyUserExceptions.MissingUserException("user to delete does not exist!")
             else:
                 requested_user.delete()
                 return True
@@ -124,7 +123,7 @@ username_min_len:   {self.username_min_len}
     def check(self):
         with db_session:
             # check if user exists
-            requested_user = dc.User.get(username=self.username)
+            requested_user = self.cfg.db.User.get(username=self.username)
             if requested_user is None:
                 return False
             else:
@@ -148,13 +147,13 @@ username_min_len:   {self.username_min_len}
 
         with db_session:
             try:
-                user = dc.User[self.username]
+                user = self.cfg.db.User[self.username]
                 pw_salt, pw_hash = self.hash_pw(password)
                 user.password_salt = pw_salt
                 user.password_hash = pw_hash
                 return True
             except ObjectNotFound:
-                raise ce.MissingUserException
+                raise PyUserExceptions.MissingUserException
 
     def changeemail(self, email):
         if email is None:
@@ -164,11 +163,11 @@ username_min_len:   {self.username_min_len}
 
         with db_session:
             try:
-                user = dc.User[self.username]
+                user = self.cfg.db.User[self.username]
                 user.email = email
                 return True
             except ObjectNotFound:
-                raise ce.MissingUserException
+                raise PyUserExceptions.MissingUserException
 
     def changeavatar(self, avatar):
         if avatar is None:
@@ -176,16 +175,16 @@ username_min_len:   {self.username_min_len}
 
         with db_session:
             try:
-                user = dc.User[self.username]
+                user = self.cfg.db.User[self.username]
                 user.avatar = avatar
                 return True
             except ObjectNotFound:
-                raise ce.MissingUserException
+                raise PyUserExceptions.MissingUserException
 
     def info(self, include_email=False):
         with db_session:
             try:
-                user = dc.User[self.username]
+                user = self.cfg.db.User[self.username]
                 if include_email:
                     return {
                         "username": user.username,
@@ -201,12 +200,12 @@ username_min_len:   {self.username_min_len}
                     }
 
             except ObjectNotFound:
-                raise ce.MissingUserException
+                raise PyUserExceptions.MissingUserException
 
     def info_extended(self):
         with db_session:
             try:
-                user = dc.User[self.username]
+                user = self.cfg.db.User[self.username]
                 return_dict = self.info(include_email=True)
                 token_dict = {}
                 if user.token is not None:
@@ -225,4 +224,4 @@ username_min_len:   {self.username_min_len}
                 return return_dict
 
             except ObjectNotFound:
-                raise ce.MissingUserException
+                raise PyUserExceptions.MissingUserException
