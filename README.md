@@ -23,9 +23,8 @@ This Project is aimed to simplify building apis which require User authentificat
   - [1.2 Table of Contents](#12-table-of-contents)
 - [2. Features](#2-features)
 - [3. Plans for the Future](#3-plans-for-the-future)
-- [4. Changelog](#4-changelog)
-  - [v1.0.6 (git) ([pypi](https://pypi.org/project/pyusermanager/1.0.6/))](#v106-git-pypi)
-  - [v1.0.5 (git) ([pypi](https://pypi.org/project/pyusermanager/1.0.5/))](#v105-git-pypi)
+- [4. Documentation Status](#4-documentation-status)
+- [5. Changelog](#4-changelog)
 
 # 2. Features
 * login
@@ -43,15 +42,50 @@ This Project is aimed to simplify building apis which require User authentificat
   * TokenMissingException
 
 # 3. Plans for the Future
-- [ ] Write Docs
-  - [x] ~~Created readthedocs page~~ 
-- [ ] Refactor db_functions.py (v.2.x.x)
+- [x] ~~Refactor db_functions.py (v.2.0.0)~~
 - [ ] Custom Return Object instead of dicts
-- [ ] fix Code Smells
+- [x] ~~fix Code Smells~~
 - [x] ~~implement token verification for other tokens than auth_token~~
-- [ ] implement proper logging
+- [ ] implement propper logging (v.2.1.0)
+- [ ] writing Tests
+      - [ ] Token Module
+      - [ ] Config Module
+      - [ ] Perm Module
+      - [ ] UserFunctions
+      - [ ] Login Functions
 
-# 4. Changelog
+# 4. Documentation Status
+<ul>
+  <li><input type="checkbox" class="task-list-item-checkbox" checked="" disabled=""> <del>Created readthedocs page</del></li>
+  <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> How to Install</li>
+  <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> How to Use</li>
+  <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> Module Documentation</li>
+    <ul>
+      <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> auth_type_enum</li>
+      <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> custom_exceptions</li>
+      <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> data_classes</li>
+      <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> ldap_stuff</li>
+      <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> login_class</li>
+      <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> perms_class</li>
+      <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> user_funcs</li>
+      <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> Token</li>
+        <ul>
+          <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> token_base_class</li>
+          <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> token_auth_class</li>
+          <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> token_reset_class</li>
+          <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> token_activation_class</li>
+        </ul>
+      <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> Config</li>
+        <ul>
+          <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> config_base_class</li>
+          <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> config_ad_class</li>
+          <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> config_db_class</li>
+          <li><input type="checkbox" class="task-list-item-checkbox" disabled=""> config_general_class</li>
+        </ul>
+    </ul>
+</ul>
+
+# 5. Changelog
 
 ## v1.0.6 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v1.0.6)) ([pypi](https://pypi.org/project/pyusermanager/1.0.6/))
 ### Added
