@@ -85,12 +85,6 @@ This Project is aimed to simplify building apis which require User authentificat
 
 # 5. Changelog
 
-## v1.0.6 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v1.0.6)) ([pypi](https://pypi.org/project/pyusermanager/1.0.6/))
-### Added
-* docs folder
-### Changed
-* README.md
-
 ## v1.0.5 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v1.0.5)) ([pypi](https://pypi.org/project/pyusermanager/1.0.5/))
 ### Changed
 * get_extended_info not takes an extra optional arg (include_email) if its not None it will return the user email in the user_dict
