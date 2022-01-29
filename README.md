@@ -59,7 +59,7 @@ This Project is aimed to simplify building apis which require User authentificat
 # 4. Documentation Status
 
 ## 4.1 General
-- [x] Created readthedocs page
+- [x] ~~Created readthedocs page~~
 - [ ] How to Install
 - [ ] How to Use
 
