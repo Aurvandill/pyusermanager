@@ -13,12 +13,15 @@
 </p>
 
 # Dev Branch
+
 experimentation and other stuff
 
 # 1. Info
+
 This Project is aimed to simplify building apis which require User authentification
 
 ## 1.2 Table of Contents
+
 - [1. Info](#1-info)
   - [1.2 Table of Contents](#12-table-of-contents)
 - [2. Features](#2-features)
@@ -29,6 +32,7 @@ This Project is aimed to simplify building apis which require User authentificat
 - [5. Changelog](#5-changelog)
 
 # 2. Features
+
 * login
 * registration
 * Token generation
@@ -44,6 +48,7 @@ This Project is aimed to simplify building apis which require User authentificat
   * TokenMissingException
 
 # 3. Plans for the Future
+
 - [x] ~~Refactor db_functions.py (v.2.0.0)~~
 - [ ] Custom Return Object instead of dicts
 - [x] ~~fix Code Smells~~
@@ -59,12 +64,14 @@ This Project is aimed to simplify building apis which require User authentificat
 # 4. Documentation Status
 
 ## 4.1 General
+
 - [x] ~~Created readthedocs page~~
 - [ ] How to Install
 - [ ] How to Use
 
 
 ## 4.2 Modules
+
 - [ ] uth_type_enum
 - [ ] custom_exceptions
 - [ ] data_classes
@@ -86,5 +93,7 @@ This Project is aimed to simplify building apis which require User authentificat
 # 5. Changelog
 
 ## v1.0.5 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v1.0.5)) ([pypi](https://pypi.org/project/pyusermanager/1.0.5/))
+
 ### Changed
+
 * get_extended_info not takes an extra optional arg (include_email) if its not None it will return the user email in the user_dict
