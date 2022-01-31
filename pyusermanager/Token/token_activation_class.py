@@ -9,7 +9,7 @@ from pyusermanager.Token import Token
 #
 ###########################
 class Activation(Token):
-    def __init__(self, config, token=None):
+    def __init__(self, config, token=None, username=None):
         self.config = config
         self.type = self.config.db.ActivationCode
         super().__init__(token)
@@ -30,7 +30,7 @@ class Activation(Token):
 
     def create(self):
         token_to_hash = f"{self.username}-activation"
-        super().hash(token_to_hash)
+        self.hash(token_to_hash)
 
         with db_session:
             try:

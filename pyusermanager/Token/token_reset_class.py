@@ -10,10 +10,10 @@ import datetime
 #
 ###########################
 class Reset(Token):
-    def __init__(self, config, token=None):
+    def __init__(self, config, token=None, username=None):
         self.config = config
         self.type = self.config.db.ResetCode
-        super().__init__(token)
+        super().__init__(token, username)
 
     def verify(self):
         with db_session:

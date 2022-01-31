@@ -9,14 +9,17 @@ from pyusermanager import PyUserExceptions
 #
 ###########################
 class Token(ABC):
-    def __init__(self, token=None):
-        if token is not None:
-            self.token = token
-        else:
-            self.token = None
+    def __init__(self, token=None, username=None):
+
+        self.token = token
+        self.username = username
 
     @abstractmethod
     def verify(self, ip):
+        pass
+
+    @abstractmethod
+    def create(self):
         pass
 
     def get_user(self):
@@ -46,15 +49,11 @@ class Token(ABC):
                 raise PyUserExceptions.TokenMissingException
 
     def __str__(self):
-        work_dict = {**type(self).__dict__,**self.__dict__}
-        returnstring = f"\n--------{self.__class__.__name__}--------\n"
-        #print(work_dict)
-        for key,val in work_dict.items():
-            if not key.startswith("_"):
-                reee = f"{''.ljust(10-len(key),' ')}{key}: {val}\n"
-                returnstring += reee
-            
-        return returnstring
+        return f"""
+--------{self.__class__.__name__}--------
+username: {self.username}
+   token: {self.token}        
+"""
 
     def __getitem__(self, key):
         try:

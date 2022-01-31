@@ -5,7 +5,7 @@ import bcrypt
 
 from pyusermanager import LdapStuff
 from pyusermanager import AUTH_TYPE
-from pyusermanager import UserFunctions
+from pyusermanager import user
 from pyusermanager import PyUserExceptions
 
 
@@ -86,7 +86,7 @@ def handle_login_missing(config, username, password):
         # perform ldap login
         if ADLogin(username, password, Adconfig).perform_login():
             # if successfull ad login create user in local db
-            userfunc = UserFunctions(username, AUTH_TYPE.AD)
+            userfunc = user(username, AUTH_TYPE.AD)
 
             userfunc.create(activated=True)
             return True

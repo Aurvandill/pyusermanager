@@ -5,10 +5,10 @@ from pyusermanager.Token import Token
 
 
 class Auth(Token):
-    def __init__(self, config, token=None):
+    def __init__(self, config, token=None, username=None):
         self.config = config
         self.type = config.db.Auth_Token
-        super().__init__(token)
+        super().__init__(token, username)
 
     def invalidate(self, ip="127.0.0.1", force=False):
         with db_session:
