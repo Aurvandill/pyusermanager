@@ -29,7 +29,8 @@ This Project is aimed to simplify building apis which require User authentificat
 - [4. Documentation Status](#4-documentation-status)
   - [4.1 General](#41-general)
   - [4.2 Modules](#42-modules)
-- [5. Changelog](#5-changelog)
+- [5. Quickstart](#5-quickstart)
+- [6. Changelog](#6-changelog)
 
 # 2. Features
 
@@ -90,7 +91,51 @@ This Project is aimed to simplify building apis which require User authentificat
      - [ ] config_db_class
      - [ ] config_general_class
 
-# 5. Changelog
+# 5. Quickstart
+
+```python
+
+from pyusermanager import *
+from pyusermanager.Config import *
+from pyusermanager.Config.db_providers import *
+import pyusermanager.Token as Token
+
+# Create DB-Config
+db_cfg = MYSQL_Provider(
+    host="127.0.0.1", port=3306, user="test", passwd="test1234", db="users"
+)
+# setup general config
+cfg = General_Config(auto_activate_accounts=False)
+# connect to db
+cfg.bind(db_cfg)
+
+#creating user
+try:
+    user(cfg, "testuser").create("password")
+except PyUserExceptions.AlreadyExistsException:
+    print("user already exists")
+
+#if login was successfull we want to create an auth token and print it
+if login(cfg,'testuser','password'):
+    token = Token.Auth(cfg,username="testuser")
+    token.create("127.0.0.1",valid_days=1)
+    print(f"Token: {token.token}")
+
+testtoken = Token.Auth(cfg,token=token.token)
+print(f"trying to verify Token: {testtoken.token}\nreturnes: {testtoken.verify('127.0.0.1')}")
+
+#creating a perm and assigning it to a user
+testperm = Perm(cfg,"testperm")
+testperm.create()
+print(f"tyring to assign it to testuser: {testperm.assign_to_user('testuser')}")
+
+
+```
+
+more example can be found in howtouse.py
+
+
+# 6. Changelog
 
 ## v1.0.5 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v1.0.5)) ([pypi](https://pypi.org/project/pyusermanager/1.0.5/))
 
