@@ -1,5 +1,4 @@
 from pony.orm import PrimaryKey, Optional, Required, Set
-from pony.orm.core import EntityMeta, Entity
 import datetime
 
 from pyusermanager import AUTH_TYPE

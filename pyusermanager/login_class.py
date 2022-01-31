@@ -61,7 +61,7 @@ class LOCALLogin(LoginHandler):
             return new_hash == requested_user.password_hash
 
 
-def Login(config, username, password):
+def login(config, username, password):
 
     with db_session:
         found_user = config.db.User.get(username=username)

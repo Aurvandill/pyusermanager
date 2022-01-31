@@ -8,24 +8,7 @@ from pyusermanager import custom_exceptions as PyUserExceptions
 from .auth_type_enum import AUTH_TYPE
 
 
-class UserFunctions:
-
-    # default config
-
-    email_required = False
-    password_min_len = 4
-    username_min_len = 4
-    activated = not email_required
-
-    def config(self):
-        return f"""
---User Function Settings--
-email_required:     {self.email_required}
-password_min_len:   {self.password_min_len}
-username_min_len:   {self.username_min_len}
-
-        """
-
+class user:
     def __str__(self):
         if len(self.__dict__) > 0:
             return str(self.__dict__)
@@ -83,16 +66,19 @@ username_min_len:   {self.username_min_len}
         if "activated" in kwargs and not isinstance(kwargs.get("activates"), bool):
             raise ValueError("Activated is not bool")
         # verify password if gien
-        if "password" in kwargs and len(kwargs.get("password")) < self.password_min_len:
+        if (
+            "password" in kwargs
+            and len(kwargs.get("password")) < self.cfg.password_min_len
+        ):
             raise ValueError("password to short")
         # verify username if gien
         if "username" in kwargs and (
             kwargs.get("username") == None
-            or len(kwargs.get("username")) < self.username_min_len
+            or len(kwargs.get("username")) < self.cfg.username_min_len
         ):
             raise ValueError("username to short")
 
-        if self.email_required and not found_email:
+        if self.cfg.email_required and not found_email:
             raise ValueError("Email required but no valid provided!")
 
     def create(self, password=None, **kwargs):

@@ -1,12 +1,13 @@
 from pony.orm import *
 from enum import Enum
 
-from pyusermanager.Config import DB_Config
 from pyusermanager.auth_type_enum import *
 
 from pyusermanager.Config import AbstractConfig
-from pyusermanager.Config import DB_Config
 from pyusermanager.Config import AD_Config
+import pyusermanager.Config.db_providers as db_providers
+
+from pyusermanager import DefineEntitys
 
 
 class General_Config(AbstractConfig):
@@ -28,27 +29,22 @@ class General_Config(AbstractConfig):
     allow_avatars = True
     admin_group_name = "admin"
 
-    dbcfg = DB_Config()
     adcfg = AD_Config()
 
     bound = False
 
-    def __init__(self,*args,**kwargs):
-        super().__init__(*args,**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.db = Database()
-        
-    def bind(self):
+
+    def bind(self, db_provider):
         if not self.bound:
-            self.db.bind(
-                provider=self.dbcfg.provider,
-                host=self.dbcfg.host,
-                port=self.dbcfg.port,
-                user=self.dbcfg.user,
-                passwd=self.dbcfg.pw,
-                db=self.dbcfg.db_name,
-            )
+            self.db.bind(db_provider.__dict__)
+
             self.db.provider.converter_classes.append((Enum, AuthTypeConverter))
-            #self.db.Entity.
-            self.db.generate_mapping(create_tables=True,check_tables=True)
+
+            DefineEntitys(self.db)
+
+            self.db.generate_mapping(create_tables=True, check_tables=True)
 
         self.bound = True
