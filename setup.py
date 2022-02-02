@@ -1,2 +1,6 @@
 from setuptools import setup
-setup()
+exec(open('pyusermanager/_version.py').read())
+setup(
+
+    version=__version__
+)
