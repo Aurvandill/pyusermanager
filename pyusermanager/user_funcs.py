@@ -1,9 +1,6 @@
 from email.utils import parseaddr
 from pony.orm import *
-
-
 import bcrypt
-
 from pyusermanager import custom_exceptions as PyUserExceptions
 from .auth_type_enum import AUTH_TYPE
 
@@ -38,7 +35,6 @@ class user:
     def get_users(self):
         """
         Gets all users including avatars as an array filled with dictionarys
-
         Returns:
         List filled with dicts
 
@@ -61,7 +57,6 @@ class user:
     @staticmethod
     def hash_pw(password=None):
         """A Function to hash specified Password (or any other string)
-
         Parameters:
         password (str): a string which will get hashed
 
@@ -79,7 +74,6 @@ class user:
 
     def verify_inputs(self, **kwargs):
         """A Function to check some qualitys of parameters
-
         Exceptions:
         ValueError -> if any parameter does not match requirements written down in the passed general config (self.cfg)
         """
@@ -111,7 +105,6 @@ class user:
 
     def create(self, password=None, **kwargs):
         """A Function to create a User in the Database
-
         Parameters:
         password (str) mandatory
         self.auth_type (AUTH_TYPE) <- provided by object!
@@ -147,7 +140,6 @@ class user:
 
     def delete(self):
         """A Function to delete a User in the Database
-
         Returns:
         success (bool) -> Usualy true since everythign else would raise an Exception
 
@@ -167,7 +159,6 @@ class user:
 
     def check(self):
         """A Function to check if a user exists
-
         Returns:
         success (bool) -> true = user exists, false = user does not exist
         """
@@ -181,7 +172,6 @@ class user:
 
     def change(self, **kwargs):
         """A Function to change multiple user Attributes
-
         Parameters: (keyword params only!)
         password (str)
         email (str)
@@ -200,7 +190,6 @@ class user:
 
     def changepw(self, password):
         """A Function to change the users password
-
         Parameters:
         password (str)
 
@@ -224,7 +213,6 @@ class user:
 
     def changeemail(self, email):
         """A Function to change the users email
-
         Parameters:
         email (str)
 
@@ -233,9 +221,7 @@ class user:
         """
         if email is None:
             raise ValueError("email is empty!")
-
         self.verify_inputs(email=email)
-
         with db_session:
             try:
                 user = self.cfg.db.User[self.username]
@@ -246,7 +232,6 @@ class user:
 
     def changeavatar(self, avatar):
         """A Function to change the users avatar
-
         Parameters:
         avatar (str)
 
@@ -255,7 +240,6 @@ class user:
         """
         if avatar is None:
             raise ValueError("avatar name is invalid!")
-
         with db_session:
             try:
                 user = self.cfg.db.User[self.username]
@@ -266,7 +250,6 @@ class user:
 
     def info(self, include_email=False):
         """A Function to return a users public information
-
         Parameters:
         include_email (bool) -> if set to true the returned dictionary will include the email address of the user
 
@@ -281,7 +264,6 @@ class user:
         with db_session:
             try:
                 user = self.cfg.db.User[self.username]
-
                 return_dict = {
                     "username": user.username,
                     "avatar": user.avatar,
@@ -289,7 +271,6 @@ class user:
                 }
                 if include_email:
                     return_dict["email"] = user.email
-
                 return return_dict
 
             except ObjectNotFound:
