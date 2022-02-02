@@ -1,6 +1,5 @@
 from pony.orm import *
-from . import custom_exceptions as ce
-
+from pyusermanager import custom_exceptions as PyUserExceptions
 
 class Perm:
     def __init__(self, config, name):
@@ -52,7 +51,7 @@ class Perm:
         with db_session:
             user = self.config.db.User.get(username=username)
             if user is None:
-                raise ce.MissingUserException("User to assign Perms to does not exist!")
+                raise PyUserExceptions.MissingUserException("User to assign Perms to does not exist!")
             # check if user has perm
             found_perm = self.config.db.Permissions.get(perm_name=perm)
             if found_perm is not None:

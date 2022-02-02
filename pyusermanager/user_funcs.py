@@ -9,12 +9,22 @@ from .auth_type_enum import AUTH_TYPE
 
 
 class user:
+    """
+    A Class to manage Users in the Database
+    """
     def __str__(self):
         if len(self.__dict__) > 0:
             return str(self.__dict__)
         return None
 
     def __init__(self, config, username=None, auth_type=AUTH_TYPE.LOCAL):
+        """Function to init a User Object
+        Parameters:
+        config (General_Config): General Config Object used for stuff like simple Parameter Verification
+        username (str): Username for the specified User
+        auth_type (AUTH_TYPE enum): Specifies the User Type specified in the AUTH_TYPE enum
+        
+        """
         self.cfg = config
         if username is not None:
             self.verify_inputs(username=username)
@@ -24,14 +34,14 @@ class user:
         self.username = str(username)
         self.auth_type = AUTH_TYPE.LOCAL
 
-    """
-    Gets all users including avatars
-    retuns an array with a dictionary for each user
-    example:
-    [{"username": "admin","avatar":"admin.png"},{"username": "testuser","avatar":"default.png"}]
-    """
+
 
     def get_users(self):
+        """
+        Gets all users including avatars as an array filled with dictionarys
+        example:
+        [{"username": "admin","avatar":"admin.png"},{"username": "testuser","avatar":"default.png"}]
+        """
         userlist = []
         with db_session:
             users = self.cfg.db.User.select()
@@ -47,6 +57,16 @@ class user:
 
     @staticmethod
     def hash_pw(password=None):
+        """A Function to hash specified Password (or any other string)
+
+        Parameters:
+        password (str): a string which will get hashed
+
+        Returns:
+        byte: pw_salt (salt used to hash input)
+        byte: pw_hash (hash of input)
+        
+        """
         if password is None:
             return None, None
         else:

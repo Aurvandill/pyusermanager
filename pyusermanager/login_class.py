@@ -10,6 +10,9 @@ from pyusermanager import PyUserExceptions
 
 
 class LoginHandler(ABC):
+    """An abstract Class
+    says every class inehreting from this must implement perform_login
+    """
     def __init__(self, config, username, password):
         self.username = username
         self.password = password
@@ -34,7 +37,19 @@ class LoginHandler(ABC):
 
 
 class ADLogin(LoginHandler):
+    """LoginHandler for AD/LDAP Users"""
+
     def __init__(self, config, username, password):
+        """removes ad suffix because the ldapstuff needs and suffix free username
+        
+        Parameters:
+        config (AD_Config)
+        username (str): username of user to login
+        password (str): password of user to login
+        
+        Exceptions:
+            PyUserExceptions.NotAnADUser -> if the requested username passed to init does not end with the specified ad suffix in AD_Config
+        """
         if username.endswith(self.config.suffix):
             username = username[: -len(self.config.suffix)]
             self.config = config
@@ -43,6 +58,12 @@ class ADLogin(LoginHandler):
             raise PyUserExceptions.NotAnADUser
 
     def perform_login(self):
+        """performs Login
+
+        Returns:
+            success (bool): was the login successfull?
+        """
+
         ldap_auth = LdapStuff(self.config)
 
         if ldap_auth.login(self.username, self.password):
@@ -52,7 +73,14 @@ class ADLogin(LoginHandler):
 
 
 class LOCALLogin(LoginHandler):
+    """LoginHandler for Local Users"""
+
     def perform_login(self):
+        """performs Login
+
+        Returns:
+            success (bool): was the login successfull?
+        """
         with db_session:
             requested_user = self.config.db.User.get(username=self.username)
             salt = requested_user.password_salt
@@ -62,6 +90,20 @@ class LOCALLogin(LoginHandler):
 
 
 def login(config, username, password):
+    """Login Function for calling from Other Function
+
+    Parameters:
+        config (General_Config): holds information for AD and misc.
+        username (str): username of user to login
+        password (str): password of user to login 
+
+    Returns:
+        success (bool): was the login successfull?
+
+    Exceptions:
+        PyUserExceptions.NotImplementedError if its handed a AUTH_TYPE which is not supported
+        PyUserExceptions.MissingUserException
+    """
 
     with db_session:
         found_user = config.db.User.get(username=username)
@@ -77,10 +119,24 @@ def login(config, username, password):
             return ADLogin(config, username, password, config.adcfg).perform_login()
 
         else:
-            raise NotImplementedError
+            raise NotImplementedError("logintype not supported")
 
 
 def handle_login_missing(config, username, password):
+    """Login Function for users not found in the db
+    if its and AD/LDAP User it creates an entry in the db for that user
+
+    Parameters:
+        config (General_Config): holds information for AD and misc.
+        username (str): username of user to login
+        password (str): password of user to login 
+
+    Returns:
+        success (bool): was the login successfull?
+
+    Exceptions:
+        PyUserExceptions.MissingUserException
+    """
     Adconfig = config.adcfg
     if Adconfig.login:
         # perform ldap login
