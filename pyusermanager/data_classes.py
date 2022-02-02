@@ -8,7 +8,6 @@ def define_entitys(db):
     class User(db.Entity):
         username = PrimaryKey(str)
         password_hash = Optional(bytes)
-        password_salt = Optional(bytes)
         auth_type = Required(AUTH_TYPE)
         email = Required(str, default="Invalid")
         avatar = Required(str, default="default.png")

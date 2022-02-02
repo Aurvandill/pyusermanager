@@ -83,10 +83,9 @@ class LOCALLogin(LoginHandler):
         """
         with db_session:
             requested_user = self.config.db.User.get(username=self.username)
-            salt = requested_user.password_salt
-            new_hash = bcrypt.hashpw(self.password.encode("utf-8"), salt)
+            pw_hash = requested_user.password_hash
 
-            return new_hash == requested_user.password_hash
+            return bcrypt.checkpw(self.password.encode("utf-8"),pw_hash)
 
 
 def login(config, username, password):

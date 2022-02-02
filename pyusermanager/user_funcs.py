@@ -115,7 +115,6 @@ class user:
                 self.cfg.db.User(
                     username=self.username,
                     password_hash=pw_hash,
-                    password_salt=pw_salt,
                     auth_type=self.auth_type,
                     **kwargs,
                 )
@@ -163,7 +162,6 @@ class user:
             try:
                 user = self.cfg.db.User[self.username]
                 pw_salt, pw_hash = self.hash_pw(password)
-                user.password_salt = pw_salt
                 user.password_hash = pw_hash
                 return True
             except ObjectNotFound:
