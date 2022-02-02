@@ -12,6 +12,7 @@ class user:
     """
     A Class to manage Users in the Database
     """
+
     def __str__(self):
         if len(self.__dict__) > 0:
             return str(self.__dict__)
@@ -20,10 +21,10 @@ class user:
     def __init__(self, config, username=None, auth_type=AUTH_TYPE.LOCAL):
         """Function to init a User Object
         Parameters:
-        config (General_Config): General Config Object used for stuff like simple Parameter Verification
+        cfg (General_Config): General Config Object used for stuff like simple Parameter Verification
         username (str): Username for the specified User
         auth_type (AUTH_TYPE enum): Specifies the User Type specified in the AUTH_TYPE enum
-        
+
         """
         self.cfg = config
         if username is not None:
@@ -34,11 +35,13 @@ class user:
         self.username = str(username)
         self.auth_type = AUTH_TYPE.LOCAL
 
-
-
     def get_users(self):
         """
         Gets all users including avatars as an array filled with dictionarys
+
+        Returns:
+        List filled with dicts
+
         example:
         [{"username": "admin","avatar":"admin.png"},{"username": "testuser","avatar":"default.png"}]
         """
@@ -65,7 +68,7 @@ class user:
         Returns:
         byte: pw_salt (salt used to hash input)
         byte: pw_hash (hash of input)
-        
+
         """
         if password is None:
             return None, None
@@ -75,6 +78,11 @@ class user:
             return pw_salt, pw_hash
 
     def verify_inputs(self, **kwargs):
+        """A Function to check some qualitys of parameters
+
+        Exceptions:
+        ValueError -> if any parameter does not match requirements written down in the passed general config (self.cfg)
+        """
 
         found_email = False
         if (
@@ -102,6 +110,23 @@ class user:
             raise ValueError("Email required but no valid provided!")
 
     def create(self, password=None, **kwargs):
+        """A Function to create a User in the Database
+
+        Parameters:
+        password (str) mandatory
+        self.auth_type (AUTH_TYPE) <- provided by object!
+        email (str) optional
+        avatar (str) optional (is a path to the avatar)
+        activated (bool) if user is already activated
+
+        Returns:
+        success (bool) -> Usualy true since everythign else would raise an Exception
+
+        Exceptions:
+        PyUserExceptions.AlreadyExistsException -> if the user already exists
+        ValueError -> if parameters do not pass according to verify_inputs
+        """
+
         with db_session:
             try:
                 self.cfg.db.User[self.username]
@@ -121,7 +146,14 @@ class user:
                 return True
 
     def delete(self):
+        """A Function to delete a User in the Database
 
+        Returns:
+        success (bool) -> Usualy true since everythign else would raise an Exception
+
+        Exceptions:
+        PyUserExceptions.MissingUserException -> if user to delete does not exist!
+        """
         with db_session:
             # check if user exists
             requested_user = self.cfg.db.User.get(username=self.username)
@@ -134,6 +166,11 @@ class user:
                 return True
 
     def check(self):
+        """A Function to check if a user exists
+
+        Returns:
+        success (bool) -> true = user exists, false = user does not exist
+        """
         with db_session:
             # check if user exists
             requested_user = self.cfg.db.User.get(username=self.username)
@@ -143,8 +180,17 @@ class user:
                 return True
 
     def change(self, **kwargs):
+        """A Function to change multiple user Attributes
 
-        print(kwargs)
+        Parameters: (keyword params only!)
+        password (str)
+        email (str)
+        avatar (str)
+
+        Exceptions
+        see changepw(), changeemail(), changeavatar()
+        """
+
         if "email" in kwargs:
             self.changeemail(kwargs["email"])
         if "password" in kwargs:
@@ -153,6 +199,15 @@ class user:
             self.changeavatar(kwargs["avatar"])
 
     def changepw(self, password):
+        """A Function to change the users password
+
+        Parameters:
+        password (str)
+
+        Exceptions
+        ValueError -> if password is to short or None
+        """
+
         if password is None:
             raise ValueError("password empty!")
 
@@ -168,6 +223,14 @@ class user:
                 raise PyUserExceptions.MissingUserException
 
     def changeemail(self, email):
+        """A Function to change the users email
+
+        Parameters:
+        email (str)
+
+        Exceptions
+        ValueError -> if email is not "valid"
+        """
         if email is None:
             raise ValueError("email is empty!")
 
@@ -182,6 +245,14 @@ class user:
                 raise PyUserExceptions.MissingUserException
 
     def changeavatar(self, avatar):
+        """A Function to change the users avatar
+
+        Parameters:
+        avatar (str)
+
+        Exceptions
+        ValueError -> if avatar is None
+        """
         if avatar is None:
             raise ValueError("avatar name is invalid!")
 
@@ -194,27 +265,47 @@ class user:
                 raise PyUserExceptions.MissingUserException
 
     def info(self, include_email=False):
+        """A Function to return a users public information
+
+        Parameters:
+        include_email (bool) -> if set to true the returned dictionary will include the email address of the user
+
+        return:
+        Dictionary with user information
+        example:
+        {"username":"admin", "avatar":"default.png", "activated":True, "email":"testemail@local"}
+
+        Exceptions
+        PyUserExceptions.MissingUserException -> if requested user is not found
+        """
         with db_session:
             try:
                 user = self.cfg.db.User[self.username]
+
+                return_dict = {
+                    "username": user.username,
+                    "avatar": user.avatar,
+                    "activated": user.activated,
+                }
                 if include_email:
-                    return {
-                        "username": user.username,
-                        "avatar": user.avatar,
-                        "email": user.email,
-                        "activated": user.activated,
-                    }
-                else:
-                    return {
-                        "username": user.username,
-                        "avatar": user.avatar,
-                        "activated": user.activated,
-                    }
+                    return_dict["email"] = user.email
+
+                return return_dict
 
             except ObjectNotFound:
                 raise PyUserExceptions.MissingUserException
 
     def info_extended(self):
+        """A Function to return userinfo + auth token info + perms
+
+        return:
+        Dictionary with user information
+        example:
+        {"username":"admin", "avatar":"default.png", "activated":True, "email":"testemail@local", token:{"last_login":"01.01.2022 13:37", "valid_until":"02.01.2022 13:37"....},"perms":["admin","testgroup"]}
+
+        Exceptions
+        PyUserExceptions.MissingUserException -> if requested user is not found
+        """
         with db_session:
             try:
                 user = self.cfg.db.User[self.username]
