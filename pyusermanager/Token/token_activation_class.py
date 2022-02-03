@@ -1,6 +1,6 @@
 from pony.orm import db_session
 from pyusermanager import PyUserExceptions
-from pyusermanager.Token import Token
+from .token_base_class import Token
 
 
 ###########################

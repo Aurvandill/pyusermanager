@@ -1,13 +1,14 @@
+from xml.dom.minidom import Entity
 from pony.orm import *
 from enum import Enum
 
-from pyusermanager.auth_type_enum import *
+from pyusermanager import DefineEntitys, AuthTypeConverter
 
-from pyusermanager.Config import AbstractConfig
-from pyusermanager.Config import AD_Config
-import pyusermanager.Config.db_providers as db_providers
+from . import AbstractConfig
+from . import AD_Config
+#from . import db_providers
 
-from pyusermanager import DefineEntitys
+
 
 
 class General_Config(AbstractConfig):

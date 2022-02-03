@@ -31,16 +31,17 @@ Modules:
 
 """
 
-from pyusermanager import custom_exceptions as PyUserExceptions
-from pyusermanager.auth_type_enum import *
-from pyusermanager.data_classes import define_entitys as DefineEntitys
-from pyusermanager import Config
-from pyusermanager.ldap_stuff import LdapStuff
-from pyusermanager.user_funcs import user
-from pyusermanager.login_class import login
-from pyusermanager.perms_class import Perm
-from pyusermanager import Token
+from . import custom_exceptions as PyUserExceptions
+from .auth_type_enum import *
+from .data_classes import define_entitys as DefineEntitys
+#from pyusermanager import Config
+from .ldap_stuff import LdapStuff
+from .user_funcs import user
+from .login_class import login
+from .perms_class import Perm
+#from pyusermanager import Token
 
-from pyusermanager._version import __version__
+#from . import Token
+from ._version import __version__
 
 

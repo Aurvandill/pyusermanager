@@ -1,4 +1,4 @@
-from pyusermanager.Config import AbstractConfig
+from .config_base_class import AbstractConfig
 
 
 class AD_Config(AbstractConfig):
