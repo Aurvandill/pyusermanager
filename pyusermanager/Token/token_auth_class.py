@@ -5,6 +5,8 @@ from pyusermanager.Token import Token
 
 
 class Auth(Token):
+    """For Auth Tokens"""
+    
     def __init__(self, config, token=None, username=None):
         self.config = config
         self.type = config.db.Auth_Token

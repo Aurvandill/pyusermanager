@@ -10,6 +10,7 @@ import datetime
 #
 ###########################
 class Reset(Token):
+    """For Reset Tokens"""
     def __init__(self, config, token=None, username=None):
         self.config = config
         self.type = self.config.db.ResetCode

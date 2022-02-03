@@ -9,6 +9,7 @@ from pyusermanager.Token import Token
 #
 ###########################
 class Activation(Token):
+    """For Activation Tokens"""
     def __init__(self, config, token=None, username=None):
         self.config = config
         self.type = self.config.db.ActivationCode

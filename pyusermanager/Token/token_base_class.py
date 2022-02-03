@@ -9,6 +9,7 @@ from pyusermanager import PyUserExceptions
 #
 ###########################
 class Token(ABC):
+    """Abstract Token Base Class"""
     def __init__(self, token=None, username=None):
 
         self.token = token

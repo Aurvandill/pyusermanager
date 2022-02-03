@@ -2,7 +2,9 @@ from abc import ABC, abstractmethod
 
 
 class AbstractConfig(ABC):
+    """an abstract base class for our configuration"""
     def __init__(self, *args, **kwargs):
+        """allow inits only by keyword arguments and the must be part of the default config!"""
         if args:
             raise ValueError("please init with keyword arguments")
         # check if arg exists in class

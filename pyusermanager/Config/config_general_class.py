@@ -11,6 +11,7 @@ from pyusermanager import DefineEntitys
 
 
 class General_Config(AbstractConfig):
+    """a Configuration class storing our General config"""
 
     # some settings
     debug_output = False
