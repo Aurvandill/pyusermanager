@@ -1,4 +1,4 @@
-from pyusermanager.Config.db_providers import DB_Provider
+from . import DB_Provider
 from typing import Optional
 
 

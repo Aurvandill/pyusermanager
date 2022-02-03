@@ -1,7 +1,7 @@
 from pony.orm import db_session
 import datetime
 from pyusermanager import PyUserExceptions
-from pyusermanager.Token import Token
+from .token_base_class import Token
 
 
 class Auth(Token):
