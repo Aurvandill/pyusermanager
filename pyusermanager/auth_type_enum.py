@@ -2,17 +2,18 @@ from enum import Enum
 
 from pony.orm.dbapiprovider import StrConverter
 
-class AUTH_TYPE(Enum):
-    LOCAL = 1
-    AD = 2
 
+class AUTH_TYPE(Enum):
+    """These are the currentlly supported Auth Types"""
+    LOCAL = "LOCAL"
+    AD = "AD"
 
 
 class AuthTypeConverter(StrConverter):
-
+    """This converts our enum to an string for the database"""
     def validate(self, val, *args):
         if not isinstance(val, AUTH_TYPE):
-            raise ValueError('Must be an Enum.  Got {}'.format(type(val)))
+            raise ValueError("Must be an Enum.  Got {}".format(type(val)))
         return val
 
     def py2sql(self, val):
