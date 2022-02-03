@@ -12,10 +12,6 @@
 <a href="https://pyusermanager.readthedocs.io/en/latest/"><img height="20" alt="Documentation status" src="https://img.shields.io/badge/documentation-up-00FF00.svg"></a>
 </p>
 
-# Dev Branch
-
-experimentation and other stuff
-
 # 1. Info
 
 This Project is aimed to simplify building apis which require User authentification
@@ -136,6 +132,13 @@ more example can be found in howtouse.py
 
 
 # 6. Changelog
+
+## v2.0.0 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v2.0.0)) ([pypi](https://pypi.org/project/pyusermanager/2.0.0/))
+
+### Changed
+
+* alot of rewrites
+* please look at the howtouse.py and documentation!
 
 ## v1.0.5 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v1.0.5)) ([pypi](https://pypi.org/project/pyusermanager/1.0.5/))
 
