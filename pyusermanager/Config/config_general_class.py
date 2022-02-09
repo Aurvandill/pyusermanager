@@ -1,4 +1,3 @@
-from xml.dom.minidom import Entity
 from pony.orm import *
 from enum import Enum
 
@@ -6,10 +5,6 @@ from pyusermanager import DefineEntitys, AuthTypeConverter
 
 from . import AbstractConfig
 from . import AD_Config
-#from . import db_providers
-
-
-
 
 class General_Config(AbstractConfig):
     """a Configuration class storing our General config"""

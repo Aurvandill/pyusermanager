@@ -12,8 +12,6 @@
 <a href="https://pyusermanager.readthedocs.io/en/latest/"><img height="20" alt="Documentation status" src="https://img.shields.io/badge/documentation-up-00FF00.svg"></a>
 </p>
 
-# Dev Branch
-
 # 1. Info
 
 This Project is aimed to simplify building apis which require User authentification
@@ -135,7 +133,13 @@ more example can be found in howtouse.py
 
 # 6. Changelog
 
-## v2.0.0 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v2.0.0)) ([pypi](https://pypi.org/project/pyusermanager/2.0.0/))
+## v2.0.2 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v2.0.2)) ([pypi](https://pypi.org/project/pyusermanager/2.0.2/))
+
+### Changed
+
+* auth_token now updates last_login attribute in database
+
+## v2.0.1 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v2.0.1)) ([pypi](https://pypi.org/project/pyusermanager/2.0.1/))
 
 ### Changed
 

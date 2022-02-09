@@ -69,5 +69,6 @@ class Auth(Token):
             else:
                 token.token = self.token
                 token.valid_until = valid_until
+                token.last_login = datetime.datetime.now()
 
             return True
