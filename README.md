@@ -69,7 +69,7 @@ This Project is aimed to simplify building apis which require User authentificat
 
 ## 4.2 Modules
 
-- [ ] uth_type_enum
+- [ ] auth_type_enum
 - [ ] custom_exceptions
 - [ ] data_classes
 - [ ] ldap_stuff
@@ -132,6 +132,13 @@ more example can be found in howtouse.py
 
 
 # 6. Changelog
+
+## v2.0.3 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v2.0.3)) ([pypi](https://pypi.org/project/pyusermanager/2.0.3/))
+
+### Changed
+
+* fixed bug in activation token creation
+* you can now set the lifetime of a token with set_lifetime on the token object
 
 ## v2.0.2 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v2.0.2)) ([pypi](https://pypi.org/project/pyusermanager/2.0.2/))
 

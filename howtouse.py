@@ -77,6 +77,9 @@ testtoken = Token.Auth(cfg,token=token.token)
 print(f"trying to verify Token: {testtoken.token}\nreturnes: {testtoken.verify('127.0.0.1')}")
 print(f"trying to verify Token from another ip: {testtoken.token}\nreturnes: {testtoken.verify('192.168.0.1')}")
 
+print("setting token lifetime to 10 days")
+testtoken.set_lifetime(10)
+
 print("creating testtoken2 object")
 testtoken2 = Token.Auth(cfg,token="this token does not exist!")
 print(f"trying to verify Token: {testtoken2.token}\nreturnes: {testtoken2.verify('127.0.0.1')}")
@@ -106,3 +109,17 @@ testperm2 = Perm(cfg,"this perm does not exist")
 
 print(f"tyring to assign a not existing perm to testuser: {testperm2.assign_to_user('testuser')}")
 print("Note this does not throw an exception it jsut returns False. This behaviour might change in the future")
+
+
+
+print("\n-----------------------------------------------------")
+print("Activation Code generation and Error Token generation")
+print("-------------------------------------------------------\n")
+
+reset = Token.Reset(cfg,username="testuser")
+reset.create(1)
+reset.set_lifetime(10)
+
+act = Token.Activation(cfg,username="testuser")
+act.create(1)
+act.set_lifetime(10)
