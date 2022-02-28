@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from pony.orm import db_session
 import bcrypt
 from pyusermanager import PyUserExceptions
+import datetime
 
 ###########################
 #
@@ -10,6 +11,7 @@ from pyusermanager import PyUserExceptions
 ###########################
 class Token(ABC):
     """Abstract Token Base Class"""
+
     def __init__(self, token=None, username=None):
 
         self.token = token
@@ -66,3 +68,12 @@ username: {self.username}
         salt = bcrypt.gensalt()
         token_hash = bcrypt.hashpw(to_hash.encode("utf-8"), salt)
         self.token = token_hash.hex()
+
+    def set_lifetime(self, valid_days=1):
+        with db_session:
+            try:
+                valid_until = datetime.datetime.now() + datetime.timedelta(days=valid_days)
+                self.type.get(token=self.token).valid_until = valid_until
+                return True
+            except:
+                return False

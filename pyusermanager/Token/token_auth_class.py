@@ -6,7 +6,7 @@ from .token_base_class import Token
 
 class Auth(Token):
     """For Auth Tokens"""
-    
+
     def __init__(self, config, token=None, username=None):
         self.config = config
         self.type = config.db.Auth_Token
@@ -17,9 +17,7 @@ class Auth(Token):
             found_token = self.config.db.Auth_Token.get(token=self.token)
 
             if found_token is None:
-                raise PyUserExceptions.TokenMissingException(
-                    "could not find requested Token"
-                )
+                raise PyUserExceptions.TokenMissingException("could not find requested Token")
 
             if found_token.ip == ip or force:
                 found_token.valid_until = "1999-01-01"

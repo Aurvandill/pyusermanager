@@ -42,3 +42,4 @@ def define_entitys(db):
     class ActivationCode(db.Entity):
         user = PrimaryKey(User)
         token = Required(str)
+        valid_until = Required(datetime.datetime, default=datetime.datetime.utcnow)
