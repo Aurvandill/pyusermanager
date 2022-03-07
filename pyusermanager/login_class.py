@@ -143,7 +143,7 @@ def handle_login_missing(config, username, password):
         # perform ldap login
         if ADLogin(config, username, password).perform_login():
             # if successfull ad login create user in local db
-            userfunc = user(config, username, AUTH_TYPE.AD)
+            userfunc = user(config = config, username = username, auth_type = AUTH_TYPE.AD)
 
             userfunc.create(activated=True)
             return True

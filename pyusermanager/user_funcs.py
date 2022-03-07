@@ -28,7 +28,7 @@ class user:
             self.verify_inputs(username=username)
 
         self.username = str(username)
-        self.auth_type = AUTH_TYPE.LOCAL
+        self.auth_type = auth_type
 
     def get_users(self):
         """
