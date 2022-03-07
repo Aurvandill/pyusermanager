@@ -27,8 +27,6 @@ class user:
         if username is not None:
             self.verify_inputs(username=username)
 
-        if auth_type != AUTH_TYPE.AD and "@" in str(username):
-            raise ValueError("@ in username is reserved for ad Users!")
         self.username = str(username)
         self.auth_type = AUTH_TYPE.LOCAL
 
@@ -85,11 +83,12 @@ class user:
         ):
             found_email = True
         # verify activated if given
-        if "activated" in kwargs and not isinstance(kwargs.get("activates"), bool):
+        if "activated" in kwargs and not isinstance(kwargs.get("activated"), bool):
             raise ValueError("Activated is not bool")
         # verify password if gien
         if (
             "password" in kwargs
+            and kwargs.get("password",None) is not None
             and len(kwargs.get("password")) < self.cfg.password_min_len
         ):
             raise ValueError("password to short")
@@ -119,6 +118,9 @@ class user:
         PyUserExceptions.AlreadyExistsException -> if the user already exists
         ValueError -> if parameters do not pass according to verify_inputs
         """
+
+        if self.auth_type != AUTH_TYPE.AD and "@" in str(self.username):
+            raise ValueError("@ in username is reserved for ad Users!")
 
         with db_session:
             try:

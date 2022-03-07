@@ -50,10 +50,9 @@ class ADLogin(LoginHandler):
         Exceptions:
             PyUserExceptions.NotAnADUser -> if the requested username passed to init does not end with the specified ad suffix in AD_Config
         """
-        if username.endswith(self.config.suffix):
-            username = username[: -len(self.config.suffix)]
-            self.config = config
-            super().__init__(username, password)
+        if username.endswith(config.adcfg.suffix):
+            username = username[: -len(config.adcfg.suffix)]
+            super().__init__(config, username, password)
         else:
             raise PyUserExceptions.NotAnADUser
 
@@ -64,7 +63,7 @@ class ADLogin(LoginHandler):
             success (bool): was the login successfull?
         """
 
-        ldap_auth = LdapStuff(self.config)
+        ldap_auth = LdapStuff(self.config.adcfg)
 
         if ldap_auth.login(self.username, self.password):
             return True
@@ -104,18 +103,20 @@ def login(config, username, password):
         PyUserExceptions.MissingUserException
     """
 
+    print(username)
+
     with db_session:
         found_user = config.db.User.get(username=username)
 
         # if user does not exist
         if found_user is None:
-            handle_login_missing(config, username, password)
+            return handle_login_missing(config, username, password)
 
         if found_user.auth_type == AUTH_TYPE.LOCAL:
             return LOCALLogin(config, username, password).perform_login()
 
         elif found_user.auth_type == AUTH_TYPE.AD and config.adcfg.login:
-            return ADLogin(config, username, password, config.adcfg).perform_login()
+            return ADLogin(config, username, password).perform_login()
 
         else:
             raise NotImplementedError("logintype not supported")
@@ -137,11 +138,12 @@ def handle_login_missing(config, username, password):
         PyUserExceptions.MissingUserException
     """
     Adconfig = config.adcfg
+    
     if Adconfig.login:
         # perform ldap login
-        if ADLogin(username, password, Adconfig).perform_login():
+        if ADLogin(config, username, password).perform_login():
             # if successfull ad login create user in local db
-            userfunc = user(username, AUTH_TYPE.AD)
+            userfunc = user(config, username, AUTH_TYPE.AD)
 
             userfunc.create(activated=True)
             return True
