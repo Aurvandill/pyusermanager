@@ -26,3 +26,8 @@ class NotAnADUser(Exception):
     """the user is not an AD user so you cant log him in via the AD Login handler"""
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args, **kwargs)
+
+class ADLoginProhibited(Exception):
+    """Ad Logins are disabled so you cant log him in via the AD Login handler"""
+    def __init__(self, *args, **kwargs):
+        Exception.__init__(self, *args, **kwargs)

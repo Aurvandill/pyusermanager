@@ -133,6 +133,13 @@ more example can be found in howtouse.py
 
 # 6. Changelog
 
+## v2.0.4 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v2.0.4)) ([pypi](https://pypi.org/project/pyusermanager/2.0.4/))
+
+### Changed
+
+* an ad user will now get ad groups on every login (will remove groups set by hand!)
+* new exception ADLoginProhibited which will be raised if an already existing ad user tries to login after ad logins where disabled
+
 ## v2.0.3 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v2.0.3)) ([pypi](https://pypi.org/project/pyusermanager/2.0.3/))
 
 ### Changed
