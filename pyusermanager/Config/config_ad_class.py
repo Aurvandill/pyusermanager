@@ -8,3 +8,4 @@ class AD_Config(AbstractConfig):
     base_dn = "ou=User,dc=ad,dc=local"
     group = "allowed_to_login"
     suffix = "@ad.local"
+    groups_prefix = None

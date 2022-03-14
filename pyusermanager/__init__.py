@@ -36,8 +36,8 @@ from .auth_type_enum import *
 from .data_classes import define_entitys as DefineEntitys
 from .ldap_stuff import LdapStuff
 from .user_funcs import user
-from .login_class import login
 from .perms_class import Perm
+from .login_class import login
 from ._version import __version__
 
 

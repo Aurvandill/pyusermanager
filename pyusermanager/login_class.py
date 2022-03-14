@@ -7,6 +7,7 @@ from pyusermanager import LdapStuff
 from pyusermanager import AUTH_TYPE
 from pyusermanager import user
 from pyusermanager import PyUserExceptions
+from pyusermanager import Perm
 
 
 class LoginHandler(ABC):
@@ -70,6 +71,51 @@ class ADLogin(LoginHandler):
         else:
             return False
 
+    def get_special_groups(self):
+        """gets all groups starting with the AD Prefix
+
+        Returns:
+            Array: List of all Groups
+        """
+
+        ldap_auth = LdapStuff(self.config.adcfg)
+
+        print("trying to get ldap groups")
+        groups = ldap_auth.get_ldap_groups(self.username,self.password)
+
+        returned_groups = []
+
+        if self.config.adcfg.groups_prefix is None:
+            return returned_groups
+
+        for group in groups:
+            print(f"got group {group}")
+            if group.startswith(self.config.adcfg.groups_prefix):
+                returned_groups.append(group[len(self.config.adcfg.groups_prefix):])
+
+        return returned_groups
+
+    def update_groups(self):
+        #ad_user = user(self.config,self.username,auth_type=AUTH_TYPE.AD)
+
+        print("trying to get all perms")
+        perms = Perm(self.config).get_all()
+        print(f"got all perms: {perms}")
+
+        print(perms)
+        #remove all groups
+        for perm in perms:
+            Perm(self.config,perm).remove_from_user(f"{self.username}{self.config.adcfg.suffix}")
+            print(f"removed {perm}")
+        #assign groups from ad (and create them if they are not existing)
+
+        for perm in self.get_special_groups():
+            tmp_perm = Perm(self.config,perm)
+            tmp_perm.create()
+            tmp_perm.assign_to_user(f"{self.username}{self.config.adcfg.suffix}")
+
+
+
 
 class LOCALLogin(LoginHandler):
     """LoginHandler for Local Users"""
@@ -115,8 +161,16 @@ def login(config, username, password):
         if found_user.auth_type == AUTH_TYPE.LOCAL:
             return LOCALLogin(config, username, password).perform_login()
 
-        elif found_user.auth_type == AUTH_TYPE.AD and config.adcfg.login:
-            return ADLogin(config, username, password).perform_login()
+        elif found_user.auth_type == AUTH_TYPE.AD:
+            if config.adcfg.login:
+                ad_user = ADLogin(config, username, password)
+                if ad_user.perform_login():
+                    ad_user.update_groups()
+                    return True
+                return False
+            else:
+                raise PyUserExceptions.ADLoginProhibited
+
 
         else:
             raise NotImplementedError("logintype not supported")
@@ -141,11 +195,13 @@ def handle_login_missing(config, username, password):
     
     if Adconfig.login:
         # perform ldap login
-        if ADLogin(config, username, password).perform_login():
+        ad_user = ADLogin(config, username, password)
+        if ad_user.perform_login():
             # if successfull ad login create user in local db
             userfunc = user(config = config, username = username, auth_type = AUTH_TYPE.AD)
-
             userfunc.create(activated=True)
+            ad_user.update_groups()
+
             return True
         else:
             raise PyUserExceptions.MissingUserException

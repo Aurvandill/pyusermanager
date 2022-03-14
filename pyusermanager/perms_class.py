@@ -4,7 +4,7 @@ from pyusermanager import custom_exceptions as PyUserExceptions
 class Perm:
     """A class to manage Permission/Usergroups"""
 
-    def __init__(self, config, name):
+    def __init__(self, config, name = "not_given"):
         """Initing of the Object
         Parameters:
         config (General_Config): general configuration of the library
