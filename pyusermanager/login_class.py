@@ -162,15 +162,15 @@ def login(config, username, password):
             return LOCALLogin(config, username, password).perform_login()
 
         elif found_user.auth_type == AUTH_TYPE.AD:
-            if config.adcfg.login:
-                ad_user = ADLogin(config, username, password)
-                if ad_user.perform_login():
-                    ad_user.update_groups()
-                    return True
-                return False
-            else:
+            if not config.adcfg.login:
                 raise PyUserExceptions.ADLoginProhibited
-
+            
+            ad_user = ADLogin(config, username, password)
+            
+            if ad_user.perform_login():
+                ad_user.update_groups()
+                return True
+            return False
 
         else:
             raise NotImplementedError("logintype not supported")
