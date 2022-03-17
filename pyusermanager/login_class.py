@@ -135,7 +135,6 @@ def login(config, username:str, password:str):
         success (bool): was the login successfull?
 
     Exceptions:
-        PyUserExceptions.NotImplementedError if its handed a AUTH_TYPE which is not supported
         PyUserExceptions.MissingUserException
     """
 
