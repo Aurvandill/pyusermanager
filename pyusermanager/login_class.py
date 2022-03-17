@@ -14,7 +14,7 @@ class LoginHandler(ABC):
     """An abstract Class
     says every class inehreting from this must implement perform_login
     """
-    def __init__(self, config, username, password):
+    def __init__(self, config, username:str, password:str):
         self.username = username
         self.password = password
         self.config = config
@@ -40,7 +40,7 @@ class LoginHandler(ABC):
 class ADLogin(LoginHandler):
     """LoginHandler for AD/LDAP Users"""
 
-    def __init__(self, config, username, password):
+    def __init__(self, config, username:str, password:str):
         """removes ad suffix because the ldapstuff needs and suffix free username
         
         Parameters:
@@ -123,7 +123,7 @@ class LOCALLogin(LoginHandler):
             return bcrypt.checkpw(self.password.encode("utf-8"),pw_hash)
 
 
-def login(config, username, password):
+def login(config, username:str, password:str):
     """Login Function for calling from Other Function
 
     Parameters:
@@ -138,8 +138,6 @@ def login(config, username, password):
         PyUserExceptions.NotImplementedError if its handed a AUTH_TYPE which is not supported
         PyUserExceptions.MissingUserException
     """
-
-    print(username)
 
     with db_session:
         found_user = config.db.User.get(username=username)
@@ -160,13 +158,11 @@ def login(config, username, password):
             if ad_user.perform_login():
                 ad_user.update_groups()
                 return True
-            return False
 
-        else:
-            raise NotImplementedError("logintype not supported")
+        return False
 
 
-def handle_login_missing(config, username, password):
+def handle_login_missing(config, username:str, password:str):
     """Login Function for users not found in the db
     if its and AD/LDAP User it creates an entry in the db for that user
 
@@ -181,9 +177,8 @@ def handle_login_missing(config, username, password):
     Exceptions:
         PyUserExceptions.MissingUserException
     """
-    Adconfig = config.adcfg
-    
-    if Adconfig.login:
+
+    if config.adcfg.login:
         # perform ldap login
         ad_user = ADLogin(config, username, password)
         if ad_user.perform_login():
@@ -193,7 +188,5 @@ def handle_login_missing(config, username, password):
             ad_user.update_groups()
 
             return True
-        else:
-            raise PyUserExceptions.MissingUserException
-    else:
-        raise PyUserExceptions.MissingUserException
+
+    raise PyUserExceptions.MissingUserException
