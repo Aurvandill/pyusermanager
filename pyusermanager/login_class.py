@@ -78,44 +78,34 @@ class ADLogin(LoginHandler):
             Array: List of all Groups
         """
 
-        ldap_auth = LdapStuff(self.config.adcfg)
-
-        print("trying to get ldap groups")
-        groups = ldap_auth.get_ldap_groups(self.username,self.password)
-
         returned_groups = []
-
         if self.config.adcfg.groups_prefix is None:
             return returned_groups
 
+        ldap_auth = LdapStuff(self.config.adcfg)
+
+        groups = ldap_auth.get_ldap_groups(self.username,self.password)
+
         for group in groups:
-            print(f"got group {group}")
             if group.startswith(self.config.adcfg.groups_prefix):
                 returned_groups.append(group[len(self.config.adcfg.groups_prefix):])
 
         return returned_groups
 
     def update_groups(self):
-        #ad_user = user(self.config,self.username,auth_type=AUTH_TYPE.AD)
 
-        print("trying to get all perms")
         perms = Perm(self.config).get_all()
-        print(f"got all perms: {perms}")
 
         print(perms)
         #remove all groups
         for perm in perms:
             Perm(self.config,perm).remove_from_user(f"{self.username}{self.config.adcfg.suffix}")
-            print(f"removed {perm}")
+        
         #assign groups from ad (and create them if they are not existing)
-
         for perm in self.get_special_groups():
             tmp_perm = Perm(self.config,perm)
             tmp_perm.create()
             tmp_perm.assign_to_user(f"{self.username}{self.config.adcfg.suffix}")
-
-
-
 
 class LOCALLogin(LoginHandler):
     """LoginHandler for Local Users"""
