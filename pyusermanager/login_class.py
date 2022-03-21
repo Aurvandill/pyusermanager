@@ -40,7 +40,7 @@ class LoginHandler(ABC):
 class ADLogin(LoginHandler):
     """LoginHandler for AD/LDAP Users"""
 
-    def __init__(self, config, username:str, password:str):
+    def __init__(self, config, username:str, password:str) -> None:
         """removes ad suffix because the ldapstuff needs and suffix free username
         
         Parameters:
@@ -66,12 +66,9 @@ class ADLogin(LoginHandler):
 
         ldap_auth = LdapStuff(self.config.adcfg)
 
-        if ldap_auth.login(self.username, self.password):
-            return True
-        else:
-            return False
+        return ldap_auth.login(self.username, self.password)
 
-    def get_special_groups(self):
+    def get_special_groups(self) -> list:
         """gets all groups starting with the AD Prefix
 
         Returns:
@@ -92,7 +89,7 @@ class ADLogin(LoginHandler):
 
         return returned_groups
 
-    def update_groups(self):
+    def update_groups(self) -> None:
 
         perms = Perm(self.config).get_all()
 
@@ -110,7 +107,7 @@ class ADLogin(LoginHandler):
 class LOCALLogin(LoginHandler):
     """LoginHandler for Local Users"""
 
-    def perform_login(self):
+    def perform_login(self) -> bool:
         """performs Login
 
         Returns:
@@ -123,7 +120,7 @@ class LOCALLogin(LoginHandler):
             return bcrypt.checkpw(self.password.encode("utf-8"),pw_hash)
 
 
-def login(config, username:str, password:str):
+def login(config, username:str, password:str) -> bool:
     """Login Function for calling from Other Function
 
     Parameters:
@@ -161,7 +158,7 @@ def login(config, username:str, password:str):
         return False
 
 
-def handle_login_missing(config, username:str, password:str):
+def handle_login_missing(config, username:str, password:str) -> bool:
     """Login Function for users not found in the db
     if its and AD/LDAP User it creates an entry in the db for that user
 
