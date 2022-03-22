@@ -5,3 +5,4 @@ __pycache__
 /docs/_build
 /.vscode
 /.git
+/build_and_upload.txt

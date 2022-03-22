@@ -89,7 +89,7 @@ print (f"testtoken2:{testtoken2}")
 
 print("as we see a successfull token verification gives us an username!")
 print("but be carefull if you use the same object to verify another token or anything else the username does not get updated!")
-print("(this behaivour might get changed in the future)")
+print("(this behaviour might get changed in the future)")
 
 
 print("\n----------------------------------")
@@ -100,15 +100,15 @@ testperm = Perm(cfg,"testperm")
 print(f"tyring to create perm testperm: {testperm.create()}")
 print(f"tyring to assign it to testuser: {testperm.assign_to_user('testuser')}")
 try:
-    print(f"tyring to assign it to not existing user: {testperm.assign_to_user('doesnot exist')}")
+    print(f"trying to assign it to a not existing user: {testperm.assign_to_user('does not exist')}")
 except PyUserExceptions.MissingUserException:
     print("user was not found so we cant assign an perm")
 
 #now we try to assing a perm which does not exist in the db!
 testperm2 = Perm(cfg,"this perm does not exist")
 
-print(f"tyring to assign a not existing perm to testuser: {testperm2.assign_to_user('testuser')}")
-print("Note this does not throw an exception it jsut returns False. This behaviour might change in the future")
+print(f"trying to assign a not existing perm to testuser: {testperm2.assign_to_user('testuser')}")
+print("Note this does not throw an exception it just returns False. This behaviour might change in the future")
 
 
 

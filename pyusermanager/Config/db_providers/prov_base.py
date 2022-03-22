@@ -19,7 +19,7 @@ class DB_Provider(ABC):
 
         for key, val in kwargs.items():
             # check if key is in var
-            # if not will rais exception!
+            # if not will raise exception!
             self.__getattribute__(key)
             # set it
             self.__setattr__(key, val)

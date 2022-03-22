@@ -128,10 +128,18 @@ print(f"tyring to assign it to testuser: {testperm.assign_to_user('testuser')}")
 
 ```
 
-more example can be found in howtouse.py
+more examples can be found in howtouse.py
 
 
 # 6. Changelog
+
+## v2.0.5 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v2.0.5)) ([pypi](https://pypi.org/project/pyusermanager/2.0.5/))
+
+### Changed
+
+* added DBProviders enum to pyusermanager.Config.db_providers so we can get the fitting db provider by the specified name
+* fixed some typos in the readme
+* fixed some typos in howtouse.py
 
 ## v2.0.4 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v2.0.4)) ([pypi](https://pypi.org/project/pyusermanager/2.0.4/))
 

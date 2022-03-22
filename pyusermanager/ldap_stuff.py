@@ -16,7 +16,7 @@ class LdapStuff:
         conn.simple_bind_s(username, password)
         return conn
 
-    def get_ldap_groups(self, username, password):
+    def get_ldap_groups(self, username:str, password:str) -> list:
 
         ldap_c = self.authenticate(username, password)
         userfilter = f"(&(objectClass=user)(sAMAccountName={username}))"
@@ -30,7 +30,7 @@ class LdapStuff:
             groups.append(group)
         return groups
 
-    def login(self, username, password):
+    def login(self, username:str, password:str) -> bool:
         try:
             groups = self.get_ldap_groups(username, password)
             if self.config.group in groups:

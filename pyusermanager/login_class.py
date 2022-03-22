@@ -14,7 +14,7 @@ class LoginHandler(ABC):
     """An abstract Class
     says every class inehreting from this must implement perform_login
     """
-    def __init__(self, config, username, password):
+    def __init__(self, config, username:str, password:str):
         self.username = username
         self.password = password
         self.config = config
@@ -40,7 +40,7 @@ class LoginHandler(ABC):
 class ADLogin(LoginHandler):
     """LoginHandler for AD/LDAP Users"""
 
-    def __init__(self, config, username, password):
+    def __init__(self, config, username:str, password:str) -> None:
         """removes ad suffix because the ldapstuff needs and suffix free username
         
         Parameters:
@@ -66,61 +66,48 @@ class ADLogin(LoginHandler):
 
         ldap_auth = LdapStuff(self.config.adcfg)
 
-        if ldap_auth.login(self.username, self.password):
-            return True
-        else:
-            return False
+        return ldap_auth.login(self.username, self.password)
 
-    def get_special_groups(self):
+    def get_special_groups(self) -> list:
         """gets all groups starting with the AD Prefix
 
         Returns:
             Array: List of all Groups
         """
 
-        ldap_auth = LdapStuff(self.config.adcfg)
-
-        print("trying to get ldap groups")
-        groups = ldap_auth.get_ldap_groups(self.username,self.password)
-
         returned_groups = []
-
         if self.config.adcfg.groups_prefix is None:
             return returned_groups
 
+        ldap_auth = LdapStuff(self.config.adcfg)
+
+        groups = ldap_auth.get_ldap_groups(self.username,self.password)
+
         for group in groups:
-            print(f"got group {group}")
             if group.startswith(self.config.adcfg.groups_prefix):
                 returned_groups.append(group[len(self.config.adcfg.groups_prefix):])
 
         return returned_groups
 
-    def update_groups(self):
-        #ad_user = user(self.config,self.username,auth_type=AUTH_TYPE.AD)
+    def update_groups(self) -> None:
 
-        print("trying to get all perms")
         perms = Perm(self.config).get_all()
-        print(f"got all perms: {perms}")
 
         print(perms)
         #remove all groups
         for perm in perms:
             Perm(self.config,perm).remove_from_user(f"{self.username}{self.config.adcfg.suffix}")
-            print(f"removed {perm}")
+        
         #assign groups from ad (and create them if they are not existing)
-
         for perm in self.get_special_groups():
             tmp_perm = Perm(self.config,perm)
             tmp_perm.create()
             tmp_perm.assign_to_user(f"{self.username}{self.config.adcfg.suffix}")
 
-
-
-
 class LOCALLogin(LoginHandler):
     """LoginHandler for Local Users"""
 
-    def perform_login(self):
+    def perform_login(self) -> bool:
         """performs Login
 
         Returns:
@@ -133,7 +120,7 @@ class LOCALLogin(LoginHandler):
             return bcrypt.checkpw(self.password.encode("utf-8"),pw_hash)
 
 
-def login(config, username, password):
+def login(config, username:str, password:str) -> bool:
     """Login Function for calling from Other Function
 
     Parameters:
@@ -145,11 +132,8 @@ def login(config, username, password):
         success (bool): was the login successfull?
 
     Exceptions:
-        PyUserExceptions.NotImplementedError if its handed a AUTH_TYPE which is not supported
         PyUserExceptions.MissingUserException
     """
-
-    print(username)
 
     with db_session:
         found_user = config.db.User.get(username=username)
@@ -162,21 +146,19 @@ def login(config, username, password):
             return LOCALLogin(config, username, password).perform_login()
 
         elif found_user.auth_type == AUTH_TYPE.AD:
-            if config.adcfg.login:
-                ad_user = ADLogin(config, username, password)
-                if ad_user.perform_login():
-                    ad_user.update_groups()
-                    return True
-                return False
-            else:
+            if not config.adcfg.login:
                 raise PyUserExceptions.ADLoginProhibited
+            
+            ad_user = ADLogin(config, username, password)
+            
+            if ad_user.perform_login():
+                ad_user.update_groups()
+                return True
+
+        return False
 
 
-        else:
-            raise NotImplementedError("logintype not supported")
-
-
-def handle_login_missing(config, username, password):
+def handle_login_missing(config, username:str, password:str) -> bool:
     """Login Function for users not found in the db
     if its and AD/LDAP User it creates an entry in the db for that user
 
@@ -191,9 +173,8 @@ def handle_login_missing(config, username, password):
     Exceptions:
         PyUserExceptions.MissingUserException
     """
-    Adconfig = config.adcfg
-    
-    if Adconfig.login:
+
+    if config.adcfg.login:
         # perform ldap login
         ad_user = ADLogin(config, username, password)
         if ad_user.perform_login():
@@ -203,7 +184,5 @@ def handle_login_missing(config, username, password):
             ad_user.update_groups()
 
             return True
-        else:
-            raise PyUserExceptions.MissingUserException
-    else:
-        raise PyUserExceptions.MissingUserException
+
+    raise PyUserExceptions.MissingUserException
