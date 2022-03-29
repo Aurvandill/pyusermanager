@@ -29,6 +29,7 @@ class General_Config(AbstractConfig):
     adcfg = AD_Config()
 
     bound = False
+    avatar_folder = "./avatars"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

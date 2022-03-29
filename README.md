@@ -133,6 +133,12 @@ more examples can be found in howtouse.py
 
 # 6. Changelog
 
+## v2.0.6 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v2.0.6)) ([pypi](https://pypi.org/project/pyusermanager/2.0.6/))
+
+### Changed
+
+* avatar folder is now part of the general config
+
 ## v2.0.5 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v2.0.5)) ([pypi](https://pypi.org/project/pyusermanager/2.0.5/))
 
 ### Changed
