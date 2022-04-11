@@ -1,7 +1,7 @@
 from email.utils import parseaddr
 from pony.orm import *
 import bcrypt
-from pyusermanager import custom_exceptions as PyUserExceptions
+from . import custom_exceptions as PyUserExceptions
 from .auth_type_enum import AUTH_TYPE
 
 

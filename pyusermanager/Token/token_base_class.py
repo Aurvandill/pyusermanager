@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from pony.orm import db_session
 import bcrypt
-from pyusermanager import PyUserExceptions
+from .. import custom_exceptions as PyUserExceptions
 import datetime
 
 ###########################

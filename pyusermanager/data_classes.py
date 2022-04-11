@@ -1,7 +1,7 @@
 from pony.orm import PrimaryKey, Optional, Required, Set
 import datetime
 
-from pyusermanager import AUTH_TYPE
+from .auth_type_enum import AUTH_TYPE
 
 
 def define_entitys(db):

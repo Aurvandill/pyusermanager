@@ -1,6 +1,6 @@
 from pony.orm import db_session
 import datetime
-from pyusermanager import PyUserExceptions
+from .. import custom_exceptions as PyUserExceptions
 from .token_base_class import Token
 
 
