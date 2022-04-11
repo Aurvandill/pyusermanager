@@ -2,7 +2,7 @@ from pony.orm import Database
 from .Config import General_Config
 from . import Token
 from .user_funcs import user
-
+from typing import Union
 
 class AuthProvider:
 
@@ -21,46 +21,37 @@ class AuthProvider:
             print(err)
             return False, ""
 
-    def is_in_group(self,token:str,*,ip:str = None,groupname:str=None,groupnames:list[str]=None)->bool:
+    def is_in_group(self,token:str,ip:str,groupnames: Union[str,list[str]])->bool:
 
         returnvalue = False
         try:
             auth_token = Token.Auth(self.cfg, token)
-            if ip is not None:
-                success = auth_token.verify(ip)
-                if success is False:
-                    return False
+            success = auth_token.verify(ip)
+            if success is False:
+                return False
             auth_token.get_user()
             user_dict = user(self.cfg, auth_token.username).info_extended()
-            print(user_dict)
-            if groupname in user_dict["perms"]:
-                returnvalue = True
-
-            for groups in groupnames:
-                if groups in user_dict["perms"]:
-                    returnvalue = True
-
         except Exception as err:
             print(err)
             pass
 
-        return returnvalue
+        if type(groupnames) is str:
+            groupnames = [groupnames]
 
-    async def is_in_group_by_name(self, username: str, *,group: str = None,groups:list[str]=None):
+        return any(item in groupnames for item in user_dict["perms"])
+
+    async def is_in_group_by_name(self, username: str,groups:Union[str,list[str]]=None):
         """checks if a user is in the specified group"""
 
         try:
             found_user = user(self.cfg, username)
             userinfo = found_user.info_extended()
-            if group in userinfo["perms"]:
-                return True
-
-            for group in groups:
-                if group in userinfo["perms"]:
-                    return True
-
+            
         except Exception as err:
-            pass
+            return False
 
-        return False
+        if type(groupnames) is str:
+            groupnames = [groupnames]
+
+        return any(item in groupnames for item in userinfo["perms"])
 
