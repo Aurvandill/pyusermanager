@@ -40,7 +40,7 @@ class AuthProvider:
 
         return any(item in groupnames for item in user_dict["perms"])
 
-    def is_in_group_by_name(self, username: str,groups:Union[str,list[str]]=None):
+    def is_in_group_by_name(self, username: str,groupnames:Union[str,list[str]]=None):
         """checks if a user is in the specified group"""
 
         try:
