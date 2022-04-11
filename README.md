@@ -133,13 +133,19 @@ more examples can be found in howtouse.py
 
 # 6. Changelog
 
-## v2.0.6 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v2.0.6)) ([pypi](https://pypi.org/project/pyusermanager/2.0.6/))
+## v2.0.7 ([git](https://github.com/Aurvandill/pyusermanager/releases/tag/v2.0.7)) ([pypi](https://pypi.org/project/pyusermanager/2.0.7/))
+
+### Changed
+
+* added AuthProvider Class so we have an app wide possibility to check groups and other stuff
+
+## v2.0.6 ([git](https://github.com/Aurvandill/pyusermanager/releases/tag/v2.0.6)) ([pypi](https://pypi.org/project/pyusermanager/2.0.6/))
 
 ### Changed
 
 * avatar folder is now part of the general config
 
-## v2.0.5 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v2.0.5)) ([pypi](https://pypi.org/project/pyusermanager/2.0.5/))
+## v2.0.5 ([git](https://github.com/Aurvandill/pyusermanager/releases/tag/v2.0.5)) ([pypi](https://pypi.org/project/pyusermanager/2.0.5/))
 
 ### Changed
 
@@ -147,34 +153,34 @@ more examples can be found in howtouse.py
 * fixed some typos in the readme
 * fixed some typos in howtouse.py
 
-## v2.0.4 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v2.0.4)) ([pypi](https://pypi.org/project/pyusermanager/2.0.4/))
+## v2.0.4 ([git](https://github.com/Aurvandill/pyusermanager/releases/tag/v2.0.4)) ([pypi](https://pypi.org/project/pyusermanager/2.0.4/))
 
 ### Changed
 
 * an ad user will now get ad groups on every login (will remove groups set by hand!)
 * new exception ADLoginProhibited which will be raised if an already existing ad user tries to login after ad logins where disabled
 
-## v2.0.3 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v2.0.3)) ([pypi](https://pypi.org/project/pyusermanager/2.0.3/))
+## v2.0.3 ([git](https://github.com/Aurvandill/pyusermanager/releases/tag/v2.0.3)) ([pypi](https://pypi.org/project/pyusermanager/2.0.3/))
 
 ### Changed
 
 * fixed bug in activation token creation
 * you can now set the lifetime of a token with set_lifetime on the token object
 
-## v2.0.2 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v2.0.2)) ([pypi](https://pypi.org/project/pyusermanager/2.0.2/))
+## v2.0.2 ([git](https://github.com/Aurvandill/pyusermanager/releases/tag/v2.0.2)) ([pypi](https://pypi.org/project/pyusermanager/2.0.2/))
 
 ### Changed
 
 * auth_token now updates last_login attribute in database
 
-## v2.0.1 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v2.0.1)) ([pypi](https://pypi.org/project/pyusermanager/2.0.1/))
+## v2.0.1 ([git](https://github.com/Aurvandill/pyusermanager/releases/tag/v2.0.1)) ([pypi](https://pypi.org/project/pyusermanager/2.0.1/))
 
 ### Changed
 
 * alot of rewrites
 * please look at the howtouse.py and documentation!
 
-## v1.0.5 ([git](https://github.com/Aurvandill137/pyusermanager/releases/tag/v1.0.5)) ([pypi](https://pypi.org/project/pyusermanager/1.0.5/))
+## v1.0.5 ([git](https://github.com/Aurvandill/pyusermanager/releases/tag/v1.0.5)) ([pypi](https://pypi.org/project/pyusermanager/1.0.5/))
 
 ### Changed
 

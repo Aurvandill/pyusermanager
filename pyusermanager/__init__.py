@@ -22,7 +22,7 @@ Modules:
     - AbstractConfig (abstract Class)
     - AD_Config
     - General_Config
-    - db_providers -> db provider ocnfigs (all db types supported by ponyorm)
+    - db_providers -> db provider configs (all db types supported by ponyorm)
         - DB_Provider (abstract Class)
         - CockroachDB_Provider
         - MYSQL_Provider
@@ -39,5 +39,6 @@ from .user_funcs import user
 from .perms_class import Perm
 from .login_class import login
 from ._version import __version__
+from .authprovider_class import AuthProvider
 
 

@@ -1,5 +1,5 @@
 from pony.orm import *
-from pyusermanager import custom_exceptions as PyUserExceptions
+from . import custom_exceptions as PyUserExceptions
 
 class Perm:
     """A class to manage Permission/Usergroups"""

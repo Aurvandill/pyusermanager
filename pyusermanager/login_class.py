@@ -3,11 +3,11 @@ from pony.orm import *
 import bcrypt
 
 
-from pyusermanager import LdapStuff
-from pyusermanager import AUTH_TYPE
-from pyusermanager import user
-from pyusermanager import PyUserExceptions
-from pyusermanager import Perm
+from .ldap_stuff import LdapStuff
+from .auth_type_enum import AUTH_TYPE
+from .user_funcs import user
+from . import custom_exceptions as PyUserExceptions
+from .perms_class import Perm
 
 
 class LoginHandler(ABC):
