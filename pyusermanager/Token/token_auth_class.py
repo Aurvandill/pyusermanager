@@ -65,6 +65,7 @@ class Auth(Token):
 
             # if token exists update it
             else:
+                token.ip = ip
                 token.token = self.token
                 token.valid_until = valid_until
                 token.last_login = datetime.datetime.now()

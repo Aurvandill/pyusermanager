@@ -133,6 +133,12 @@ more examples can be found in howtouse.py
 
 # 6. Changelog
 
+## v2.0.8 ([git](https://github.com/Aurvandill/pyusermanager/releases/tag/v2.0.8)) ([pypi](https://pypi.org/project/pyusermanager/2.0.8/))
+
+### Bugfixes
+
+* fixed ip not updating on successfull login in function create of Token.Auth class
+
 ## v2.0.7 ([git](https://github.com/Aurvandill/pyusermanager/releases/tag/v2.0.7)) ([pypi](https://pypi.org/project/pyusermanager/2.0.7/))
 
 ### Changed
