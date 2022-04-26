@@ -1,7 +1,7 @@
 from pony.orm import *
 from enum import Enum
 
-from pyusermanager import DefineEntitys, AuthTypeConverter
+from pyusermanager import DefineEntitys, AuthTypeConverter,AUTH_TYPE
 
 from . import AbstractConfig
 from . import AD_Config
@@ -39,7 +39,7 @@ class General_Config(AbstractConfig):
         if not self.bound:
             self.db.bind(db_provider.__dict__)
 
-            self.db.provider.converter_classes.append((Enum, AuthTypeConverter))
+            self.db.provider.converter_classes.append((AUTH_TYPE, AuthTypeConverter))
 
             DefineEntitys(self.db)
 
