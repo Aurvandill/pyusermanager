@@ -9,6 +9,10 @@ class LdapStuff:
         conn = ldap.initialize(self.config.address)
         conn.protocol_version = 3
         conn.set_option(ldap.OPT_REFERRALS, 0)
+        #if a ca_file is specified create an tls context for ldaps
+        if self.config.ca_file is not None:
+            conn.set_option(ldap.OPT_X_TLS_CACERTFILE, self.config.ca_file)
+            conn.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
 
         # add ad suffix if it does not exist!
         if not username.endswith(self.config.suffix):
