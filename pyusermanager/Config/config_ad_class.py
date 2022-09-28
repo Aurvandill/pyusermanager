@@ -9,3 +9,4 @@ class AD_Config(AbstractConfig):
     group = "allowed_to_login"
     suffix = "@ad.local"
     groups_prefix = None
+    ca_file = None

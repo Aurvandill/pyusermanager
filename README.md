@@ -133,6 +133,13 @@ more examples can be found in howtouse.py
 
 # 6. Changelog
 
+
+## v2.0.10 ([git](https://github.com/Aurvandill/pyusermanager/releases/tag/v2.0.10)) ([pypi](https://pypi.org/project/pyusermanager/2.0.10/))
+
+### Added
+
+* AD_Config now has the attribute ca_file. If this is specified it will create an TLS Context needed for ldaps connections
+
 ## v2.0.8 ([git](https://github.com/Aurvandill/pyusermanager/releases/tag/v2.0.8)) ([pypi](https://pypi.org/project/pyusermanager/2.0.8/))
 
 ### Bugfixes
