@@ -16,6 +16,9 @@
 
 This Project is aimed to simplify building apis which require User authentification
 
+## Deprecation Notice
+This Project was superseeded by [py_auth_micro](https://github.com/bad-microservices/py_auth_micro)
+
 ## 1.2 Table of Contents
 
 - [1. Info](#1-info)
